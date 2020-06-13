@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container">
+    {% from "_formhelpers.html" import render_field %}
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+        <div class="text-center h1 text-white bg-primary p-2">Registration</div>
+        {% include '_messages.html' %}
+        <form method="post" enctype="multipart/form-data">
+        <dl>
+            {{ render_field(form.first_name) }}
+            {{ render_field(form.last_name) }}
+            {{ render_field(form.email) }}
+            {{ render_field(form.phone) }}
+            {{ render_field(form.address_line_one) }}
+            {{ render_field(form.address_line_two) }}
+            {{ render_field(form.address_city) }}
+            {{ render_field(form.address_state) }}
+            {{ render_field(form.address_zipcode) }}
+            {{ render_field(form.confirm) }}
+        </dl>
+        <p><input type=submit value=Register class="btn btn-primary">
+        </form>
+        <div class="col-md-4"></div>
+</div>
+
+{% endblock content %}
