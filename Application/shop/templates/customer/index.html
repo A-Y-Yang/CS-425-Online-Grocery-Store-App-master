@@ -1,8 +1,6 @@
 {% extends 'layout.html' %}
 {% block content %}
 
-{% include '_messages.html' %}
-
 {% include "customer_navbar.html" %}
 
 <div class="container">
@@ -19,15 +17,15 @@
             {% for product in products %}
             <tr>
                 <td>{{loop.index}}</td>
-                <td>{{product.name}}</td>
+                <td>{{product.product_name}}</td>
                 <td>{{product.price}}</td>
                 <td><img src = "{{ url_for('static', filename = 'images/'+ product.image) }}" width = "50" height = "40"></td>
                 <td>
-                  <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target=".bd-example-modal-lg-{{product.id}}">Details</button>
+                  <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target=".bd-example-modal-lg-{{product.product_id}}">Details</button>
                 </td>
                 <td>
                   <form action="{{ url_for('addcart')}}" method = "POST">
-                    <input type = "hidden" name="product_id" value="{{product.id}}"></input>
+                    <input type = "hidden" name="product_id" value="{{product.product_id}}"></input>
                     <label for="">Quantity: </label>
                     <input type = "number" name ="quantity" value = "1" min = "1"></input>
                     <button type = "submit" class = "btn btn-warning btn-sm">Add to Cart</button>
@@ -37,7 +35,7 @@
 
             <!-- Large modal -->
 
-            <div class="modal fade bd-example-modal-lg-{{product.id}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal fade bd-example-modal-lg-{{product.product_id}}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
               <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -65,7 +63,7 @@
                   </div>
                   <div class="modal-footer">
                     <form action="{{ url_for('addcart')}}" method = "POST">
-                      <input type = "hidden" name="product_id" value="{{ product.id }}"></input>
+                      <input type = "hidden" name="product_id" value="{{ product.product_id }}"></input>
                       <label for="">Quantity: </label>
                       <input type = "number" name ="quantity" value = "1" min = "1"></input>
                       <button type = "submit" class = "btn btn-warning">Add to Cart</button>

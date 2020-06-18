@@ -1,6 +1,8 @@
 {% extends 'layout.html' %}
 {% block content %}
 
+{% include '_messages.html' %}
+
 <div class="container">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="{{ url_for('customer')}}">Customer Dashboard</a>

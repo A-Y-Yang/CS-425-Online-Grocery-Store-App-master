@@ -11,16 +11,16 @@
         {% include '_messages.html' %}
         <form method="post" enctype="multipart/form-data">
         <dl>
-            {{ render_field(form.first_name) }}
-            {{ render_field(form.last_name) }}
-            {{ render_field(form.email) }}
-            {{ render_field(form.phone) }}
-            {{ render_field(form.address_line_one) }}
-            {{ render_field(form.address_line_two) }}
-            {{ render_field(form.address_city) }}
-            {{ render_field(form.address_state) }}
-            {{ render_field(form.address_zipcode) }}
-            {{ render_field(form.confirm) }}
+            {{ render_field(form.first_name, class="form-control") }}
+            {{ render_field(form.last_name, class="form-control") }}
+            {{ render_field(form.email, class="form-control") }}
+            {{ render_field(form.phone, class="form-control") }}
+            {{ render_field(form.da_line_one, class="form-control") }}
+            {{ render_field(form.da_line_two, class="form-control") }}
+            {{ render_field(form.da_city, class="form-control") }}
+            {{ render_field(form.da_state, class="form-control") }}
+            {{ render_field(form.da_zipcode, class="form-control") }}
+            {{ render_field(form.confirm, class="form-control") }}
         </dl>
         <p><input type=submit value=Register class="btn btn-primary">
         </form>

@@ -1,6 +1,6 @@
 from flask import render_template, session, request, redirect, url_for, flash, current_app
 from shop import app, db
-from shop.product.models import Product
+from shop.admin.models import Product
 
 def MergeDicts(dict1, dict2):
     if isinstance(dict1, list) and isinstance(dict2, list):

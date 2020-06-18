@@ -9,7 +9,7 @@
         <h2 class="text-center bg-info p-2">Add a product</h2>
         {% from "_formhelpers.html" import render_field %}  
         <form action="" method="POST" enctype="multipart/form-data">
-            {{ render_field(form.name, class = "form-control", placeholder="Add product name") }}
+            {{ render_field(form.product_name, class = "form-control", placeholder="Add product name") }}
             {{ render_field(form.price, class = "form-control", placeholder="Add product price") }}
             {{ render_field(form.size, class = "form-control", placeholder="Add product size") }}
             

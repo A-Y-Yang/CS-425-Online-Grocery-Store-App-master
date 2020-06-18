@@ -1,8 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, session, current_app
 from shop import app, db, photos, login_manager
 from flask_login import login_required, logout_user, current_user
-from .models import Category, Product
-from shop.customer.models import CustomerOrder, OrderItem
+from shop.admin.models import Category, Product, Orders, OrderItem
 from shop.customer.forms import Checkout
 from .forms import Addproduct
 import os
@@ -16,7 +15,7 @@ def addcategory():
         getcategory = request.form.get('category')
         category = Category(name=getcategory)
         db.session.add(category)
-        db.seesion.commit()
+        db.session.commit()
         flash(f'The Category {getcategory} was added to your database.', 'success')
         return redirect(url_for('addcategory'))
     return render_template('product/addcategory.html', title = "Add Category")
@@ -43,12 +42,12 @@ def addproduct():
     form = Addproduct(request.form)
     if request.method == 'POST':
         image_1 = photos.save(request.files.get('image'))
-        product = Product(name = form.name.data, price = form.price.data,
+        product = Product(product_name = form.product_name.data, price = form.price.data,
                     size = form.size.data, add_info = form.add_info.data, 
                     category_id = request.form.get('category'), image = image_1)
         db.session.add(product)
         db.session.commit()
-        flash(f'{form.name.data} is added to your database.', 'success')
+        flash(f'{form.product_name.data} is added to your database.', 'success')
         return redirect(url_for('admin'))
     return render_template('product/addproduct.html', title = "Add Product Page", form = form, categories = categories)
 
@@ -62,15 +61,15 @@ def updateproduct(id):
     form = Addproduct(request.form)
     category = request.form.get('category')
     if request.method == 'POST':
-        product.name = form.name.data
+        product.product_name = form.product_name.data
         product.price = form.price.data
         product.size = form.size.data
         product.add_info = form.add_info.data
         product.category_id = category
         db.session.commit()
-        flash(f'Your product {form.name.data} has been updated.', 'success')
+        flash(f'Your product {form.product_name.data} has been updated.', 'success')
         return redirect(url_for('admin'))
-    form.name.data = product.name
+    form.product_name.data = product.product_name
     form.price.data = product.price
     form.size.data = product.size
     form.add_info.data = product.add_info
@@ -90,7 +89,7 @@ def deleteproduct(id):
             print(e)
         db.session.delete(product)
         db.session.commit()
-        flash(f'Your product {product.name} was deleted.', 'success')
+        flash(f'Your product {product.product_name} was deleted.', 'success')
         return redirect(url_for('admin'))
     flash(f'Cannot delete the product.','danger')
     return render_template(url_for('admin'))
