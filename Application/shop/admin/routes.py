@@ -1,7 +1,7 @@
 from flask import render_template, session, request, redirect, url_for, flash
 from flask_login import login_required, logout_user, current_user
 from shop import app, db, login_manager
-from .forms import RegistrationForm, LoginForm, StaffRegistrationForm
+from .forms import RegistrationForm, LoginForm, StaffRegistrationForm, Addsupplier, Addwarehouse
 from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders
 import os
 
@@ -13,7 +13,7 @@ def home():
 def admin():
     if 'email' not in session:
         flash(f'Please login first','danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))
     products = Product.query.order_by(Product.product_name.asc()).all()
     return render_template('admin/index.html', title = 'Admin Page', products = products)
 
@@ -21,7 +21,7 @@ def admin():
 def customer():
     if 'email' not in session:
         flash(f'Please login first','danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))
     products = Product.query.order_by(Product.product_name.asc()).all()
     return render_template('customer/index.html', title = 'Customer Page', products = products)
 
@@ -29,7 +29,7 @@ def customer():
 def categories():
     if 'email' not in session:
         flash(f'Please login first','danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))
     categories = Category.query.all()
     return render_template('admin/category.html', title = 'Category Page', categories = categories)
 
@@ -92,13 +92,13 @@ def customer_login():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 @app.route('/customer_list')
 def customer_list():
     if 'email' not in session:
         flash(f'Please login first','danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))
     customers = Customer.query.all()
     return render_template('admin/customer_list.html', title = 'Customer List Page', customers = customers)
 
@@ -106,7 +106,7 @@ def customer_list():
 def order_list():
     if 'email' not in session:
         flash(f'Please login first','danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))
     orders = Orders.query.all()
     return render_template('admin/order_list.html', title = 'Order List Page', orders = orders)
 
@@ -114,28 +114,67 @@ def order_list():
 def suppliers():
     if 'email' not in session:
         flash(f'Please login first','danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))
     suppliers = Supplier.query.all()
     return render_template('admin/supplier.html', title = 'Supplier Page', suppliers = suppliers)
+
+@app.route('/addsupplier', methods=['GET', 'POST'])
+def addsupplier():
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    form = Addsupplier(request.form)
+    if request.method == 'POST':
+        supplier = Supplier(name = form.name.data, phone = form.phone.data, email = form.email.data, 
+                    a_line_one = form.a_line_one.data, a_line_two = form.a_line_two.data, a_city = form.a_city.data,
+                    a_state = form.a_state.data, a_zipcode = form.a_zipcode.data)
+        db.session.add(supplier)
+        db.session.commit()
+        flash(f'Supplier {form.name.data} is added to your database.', 'success')
+        return redirect(url_for('suppliers'))
+    return render_template('admin/addsupplier.html', title = "Add Supplier Page", form = form)
+
+@app.route('/supplier_details/<int:id>', methods=['GET', 'POST'])
+def supplier_details(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('login'))
+    supplier = Supplier.query.get_or_404(id)
+    return render_template('supplier/supplier_details.html', supplier = supplier)
 
 @app.route('/updatesupplier/<int:supplier_id>', methods=['GET', 'POST'])
 def updatesupplier(supplier_id):
     if 'email' not in session:
         flash(f'Plese login first','danger')
-    updatesup = Supplier.query.get_or_404(supplier_id)
-    supplier = request.form.get('supplier')
+    supplier = Supplier.query.get_or_404(supplier_id)
+    form = Addsupplier(request.form)
     if request.method =="POST":
-        updatesup.name = supplier
-        flash(f'This supplier {supplier} has been updated', 'success')
+        supplier.name = form.name.data
+        supplier.phone = form.phone.data
+        supplier.email = form.email.data
+        supplier.a_line_one = form.a_line_one.data
+        supplier.a_line_two = form.a_line_two.data
+        supplier.a_city = form.a_city.data
+        supplier.a_state = form.a_state.data
+        supplier.a_zipcode = form.a_zipcode.data
+        flash(f'This Supplier {form.name.data} has been updated', 'success')
         db.session.commit()
         return redirect(url_for('suppliers'))
-    return render_template('product/updatesupplier.html', title = "Update Supplier Page", updatesup = updatesup)
+        form.name.data = supplier.name
+        form.phone.data = supplier.phone
+        form.email.data = supplier.email
+        form.a_line_one.data = supplier.a_line_one
+        form.a_line_two.data = supplier.a_line_two
+        form.a_city.data = supplier.a_city
+        form.a_state.data = supplier.a_state
+        form.a_zipcode.data = supplier.a_zipcode
+    return render_template('admin/updatesupplier.html', title = "Update Supplier Page", form = form, supplier=supplier)
 
 @app.route('/deletesupplier/<int:supplier_id>', methods=["POST"])
 def deletesupplier(supplier_id):
     if 'email' not in session:
         flash(f'Please login first','danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))
     supplier = request.form.get('supplier')
     if request.method == "POST":
         db.session.delete(supplier)
@@ -150,28 +189,66 @@ def deletesupplier(supplier_id):
 def warehouses():
     if 'email' not in session:
         flash(f'Please login first','danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))
     warehouses = Warehouse.query.all()
     return render_template('admin/warehouse.html', title = 'Warehouse Page', warehouses = warehouses)
+
+@app.route('/addwarehouse', methods=['GET', 'POST'])
+def addwarehouse():
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    form = Addwarehouse(request.form)
+    if request.method == 'POST':
+        warehouse = Warehouse(name = form.name.data, a_line_one = form.a_line_one.data,
+                    a_line_two = form.a_line_two.data, a_city = form.a_city.data,
+                    a_state = form.a_state.data, a_zipcode = form.a_zipcode.data,
+                    capacity = form.capacity.data)
+        db.session.add(warehouse)
+        db.session.commit()
+        flash(f'Warehouse {form.name.data} is added to your database.', 'success')
+        return redirect(url_for('warehouses'))
+    return render_template('admin/addwarehouse.html', title = "Add Warehouse Page", form = form)
+
+@app.route('/warehouse_details/<int:id>', methods=['GET', 'POST'])
+def warehouse_details(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('login'))
+    warehouse = Warehouse.query.get_or_404(id)
+    return render_template('warehouse/warehouse_details.html', warehouse = warehouse)
 
 @app.route('/updatewarehouse/<int:warehouse_id>', methods=['GET', 'POST'])
 def updatewarehouse(warehouse_id):
     if 'email' not in session:
         flash(f'Plese login first','danger')
-    updatewh = Warehouse.query.get_or_404(warehouse_id)
-    warehouse = request.form.get('warehouse')
+    warehouse = Warehouse.query.get_or_404(warehouse_id)
+    form = Addwarehouse(request.form)
     if request.method =="POST":
-        updatewh.name = warehouse
-        flash(f'This warehouse {warehouse} has been updated', 'success')
+        warehouse.name = form.name.data
+        warehouse.a_line_one = form.a_line_one.data
+        warehouse.a_line_two = form.a_line_two.data
+        warehouse.a_city = form.a_city.data
+        warehouse.a_state = form.a_state.data
+        warehouse.a_zipcode = form.a_zipcode.data
+        warehouse.capacity = form.capacity.data
+        flash(f'This warehouse {form.name.data} has been updated', 'success')
         db.session.commit()
         return redirect(url_for('warehouses'))
-    return render_template('product/updatewarehouse.html', title = "Update Warehouse Page", updatesup = updatesup)
+    form.name.data = warehouse.name
+    form.a_line_one.data = warehouse.a_line_one 
+    form.a_line_two.data = warehouse.a_line_two
+    form.a_city.data = warehouse.a_city
+    form.a_state.data = warehouse.a_state
+    form.a_zipcode.data = warehouse.a_zipcode
+    form.capacity.data = warehouse.capacity
+    return render_template('admin/updatewarehouse.html', title = "Update Warehouse Page", form = form, warehouse = warehouse)
 
 @app.route('/deletewarehouse/<int:warehouse_id>', methods=["POST"])
 def deletewarehouse(warehouse_id):
     if 'email' not in session:
         flash(f'Please login first','danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))
     warehouse = request.form.get('warehouse')
     if request.method == "POST":
         db.session.delete(warehouse)

@@ -8,7 +8,7 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://groupthree:1qaz2WSX3edc4RFV@cs425-aws-dbinstance.ctgzmkb6bvg8.us-east-2.rds.amazonaws.com/postgres'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres1@localhost/postgres'
 app.config['SECRET_KEY'] = 'abcd1234'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(basedir, 'static/images')
