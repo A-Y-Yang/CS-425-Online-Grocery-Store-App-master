@@ -158,7 +158,7 @@ class Pricing(db.Model):
 
 class Stock(db.Model):
     __tablename__ = 'stock'
-    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'), primary_key = True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id', ondelete='CASCADE'), primary_key = True)
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.warehouse_id'), primary_key = True)
     item_quantity = db.Column(db.Integer, nullable = False)
     size_total = db.Column(db.Numeric(12,5), nullable = False)
@@ -176,29 +176,29 @@ class AddStock(db.Model):
 class Ordering(db.Model):
     __tablename__ = 'ordering'
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.customer_id'), primary_key = True)
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id'), primary_key = True)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id', ondelete='CASCADE'), primary_key = True)
     staff_id = db.Column(db.Integer, db.ForeignKey('staff.staff_id'), primary_key = True)
 
 class Availability(db.Model):
     __tablename__ = 'availability'
-    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'), primary_key = True)
-    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.warehouse_id'), primary_key = True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id', ondelete='CASCADE'), primary_key = True)
+    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.warehouse_id', ondelete='CASCADE'), primary_key = True)
     item_quantity = db.Column(db.Integer)
     __table_args__ = (CheckConstraint('item_quantity >=0'),)
 
 class Owns(db.Model):
     __tablename__ = 'owns'
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.customer_id'), primary_key = True)
-    card_number = db.Column(db.CHAR(16), db.ForeignKey('credit_card.card_number'), primary_key = True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.customer_id', ondelete='CASCADE'), primary_key = True)
+    card_number = db.Column(db.CHAR(16), db.ForeignKey('credit_card.card_number', ondelete='CASCADE'), primary_key = True)
 
 class PaidWith(db.Model):
     __tablename__ = 'paidwith'
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id'), primary_key = True)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id', ondelete='CASCADE'), primary_key = True)
     card_number = db.Column(db.CHAR(16), db.ForeignKey('credit_card.card_number'), primary_key = True)
 
 class OrderItem(db.Model):
     __tablename__ = 'order_item'
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id'), primary_key = True)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id', ondelete='CASCADE'), primary_key = True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'), primary_key = True)
     quantity = db.Column(db.Integer, nullable = False)
     unit_price = db.Column(db.Numeric(9,2), nullable = False)
@@ -207,27 +207,27 @@ class OrderItem(db.Model):
 
 class Includes(db.Model):
     __tablename__ = 'includes'
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id'), primary_key = True)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id', ondelete='CASCADE'), primary_key = True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'), primary_key = True)
     quantity = db.Column(db.Integer, nullable = False)
     __table_args__ = (CheckConstraint('quantity > 0'),)
 
 class Order_item_warehouse_id(db.Model):
     __tablename__ = 'order_item_warehouse_id'
-    order_id = db.Column(db.Integer,db.ForeignKey('orders.order_id'), primary_key = True)
+    order_id = db.Column(db.Integer,db.ForeignKey('orders.order_id', ondelete='CASCADE'), primary_key = True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'), primary_key = True)
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.warehouse_id'), primary_key = True)
 
 class Supplies(db.Model):
     __tablename__ = 'supplies'
-    supplier_id = db.Column(db.Integer, db.ForeignKey('supplier.supplier_id'), primary_key = True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'), primary_key = True)
+    supplier_id = db.Column(db.Integer, db.ForeignKey('supplier.supplier_id', ondelete='CASCADE'), primary_key = True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id', ondelete='CASCADE'), primary_key = True)
     supplier_price = db.Column(db.Numeric(9,2), nullable = False)
 
 class Stores(db.Model):
     __tablename__ = 'stores'
-    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'), primary_key = True)
-    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.warehouse_id'), primary_key = True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id', ondelete='CASCADE'), primary_key = True)
+    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.warehouse_id', ondelete='CASCADE'), primary_key = True)
     size_total = db.Column(db.Numeric(12,5), nullable = False)
 
 db.create_all()

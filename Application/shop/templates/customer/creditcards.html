@@ -1,0 +1,88 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% include 'customer_navbar.html' %}
+
+<div class="container">
+    <table class="table table-sm table-condensed  table-striped">
+        <thead>
+            <th>Credit Card Number</th>
+            <th>Details</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </thead>
+        <tbody>
+            {% for creditcard in creditcards %}
+            <tr>
+                <td>{{creditcard.card_number}}</td>
+                <td>
+                  <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#exampleModalLong-{{creditcard.card_number}}">Details</button>
+                </td>
+                <td><a href="{{ url_for('updatecards', id = customer.customer_id, card_number=creditcard.card_number)}}" class = "btn btn-sm btn-outline-info"> Edit </a></td>
+                <td>
+                  <button type = "button" class = "btn btn-danger btn-sm" data-toggle = "modal" data-target="#exampleModal-{{creditcard.card_number}}"> Delete </button>
+                </td>
+            </tr>
+            <!-- Long modal -->
+            <div class="modal fade" id = "exampleModalLong-{{creditcard.card_number}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLong" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLong-{{creditcard.card_number}}">Card Details</h5> 
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="container mt-6">
+                      <div class="row">
+                        <div class="col-md-8">
+                          <h4> {{ creditcard.card_owner_name }} </h4>
+                          <hr>
+                          <b> Address </b>
+                          <p> {{ creditcard.CBA_line_one }} </p>
+                          <p> {{ creditcard.CBA_line_two }} </p>
+                          <p> {{ creditcard.CBA_city }}, {{ creditcard.CBA_state }} {{ creditcard.CBA_zipcode }} </p>
+                          <p> Expire Date: {{ creditcard.card_expire_date }} </p>
+                          <p> CVV: {{ creditcard.card_cvv }} </p>
+                        </div>
+                      </div>
+                    </div> 
+                  </div>
+                  <div class="modal-footer">
+                    <form action="{{ url_for('updatecards', id = customer.customer_id, card_number=creditcard.card_number)}}" method = "POST">
+                      <input type = "hidden" name="creditcard" value="{{ creditcard.card_number }}"></input>
+                      <button type = "submit" class = "btn btn-outline-info">Edit</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div> 
+                </div>
+              </div>
+            </div>
+            <!--Modal-->
+            <div class="modal fade" id="exampleModal-{{creditcard.card_number}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{{creditcard.card_number}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <p class="text"> Are you sure that you want to delete the card ({{creditcard.card_number}})? </p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <form action="{{url_for('deletecards',id = customer.customer_id, card_number=creditcard.card_number)}}" method = "POST">
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

@@ -29,4 +29,5 @@ login_manager.login_messgae = u"Please login first"
 
 from shop.admin import routes
 from shop.product import routes
+from shop.customer import routes
 from shop.cart import carts

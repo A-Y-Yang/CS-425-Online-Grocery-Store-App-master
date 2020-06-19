@@ -2,7 +2,7 @@ from flask import render_template, session, request, redirect, url_for, flash
 from flask_login import login_required, logout_user, current_user
 from shop import app, db, login_manager
 from .forms import RegistrationForm, LoginForm, StaffRegistrationForm, Addsupplier, Addwarehouse, Addsupplier_product, Addwarehouse_product
-from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders, Supplies
+from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders, Supplies, CreditCard
 import os
 
 @app.route('/')
@@ -16,66 +16,6 @@ def admin():
         return redirect(url_for('home'))
     products = Product.query.order_by(Product.product_name.asc()).all()
     return render_template('admin/index.html', title = 'Admin Page', products = products)
-
-@app.route('/customer/<int:id>')
-def customer(id):
-    if 'email' not in session:
-        flash(f'Please login first','danger')
-        return redirect(url_for('home'))
-    products = Product.query.order_by(Product.product_name.asc()).all()
-    customer = Customer.query.get_or_404(id)
-    return render_template('customer/index.html', title = 'Customer Page', products = products, customer = customer)
-
-@app.route('/profile/<int:id>', methods=['GET', 'POST'])
-def profile(id):
-    if 'email' not in session:
-        flash(f'Please login first','danger')
-        return redirect(url_for('login'))
-    customer = Customer.query.get_or_404(id)
-    form = RegistrationForm(request.form)
-    if request.method == 'POST' and form.validate():
-        customer = Customer(first_name = form.first_name.data, last_name = form.last_name.data,
-                    phone = form.phone.data, email = form.email.data, 
-                    da_line_one= form.da_line_one.data, 
-                    da_line_two = form.da_line_two.data,
-                    da_city = form.da_city.data, da_state = form.da_state.data,
-                    da_zipcode = form.da_zipcode.data)
-        db.session.commit()
-        flash(f'Your profile has been updated.', 'success')
-        return redirect({{url_for('customer', id = customer.customer_id)}})
-    form.first_name.data = customer.first_name
-    form.last_name.data = customer.last_name
-    form.phone.data = customer.phone
-    form.email.data = customer.email
-    form.da_line_one.data = customer.da_line_one
-    form.da_line_two.data = customer.da_line_two
-    form.da_city.data = customer.da_city
-    form.da_state.data = customer.da_state
-    form.da_zipcode.data = customer.da_zipcode
-    return render_template('customer/profile.html', title = "Profile Page", form = form, customer = customer)
-
-@app.route('/categories')
-def categories():
-    if 'email' not in session:
-        flash(f'Please login first','danger')
-        return redirect(url_for('home'))
-    categories = Category.query.all()
-    return render_template('admin/category.html', title = 'Category Page', categories = categories)
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegistrationForm(request.form)
-    if request.method == 'POST' and form.validate():
-        customer = Customer(first_name = form.first_name.data, last_name = form.last_name.data,
-                    phone = form.phone.data, email = form.email.data, 
-                    da_line_one= form.da_line_one.data, da_line_two = form.da_line_two.data,
-                    da_city = form.da_city.data, da_state = form.da_state.data,
-                    da_zipcode = form.da_zipcode.data)
-        db.session.add(customer)
-        db.session.commit()
-        flash(f'Welcome {form.first_name.data}! Thanks for registering', 'success')
-        return redirect(url_for('customer_login'))
-    return render_template('customer/register.html', title = 'Customer Registeration', form=form)
 
 @app.route('/staff_register', methods=['GET', 'POST'])
 def staff_register():
@@ -105,19 +45,6 @@ def staff_login():
             flash(f'Wrong email. Please try again.', 'danger')
     return render_template('admin/login.html', title = 'Staff Login Page', form=form)
 
-@app.route('/customer_login', methods=['GET', 'POST'])
-def customer_login():
-    form = LoginForm(request.form)
-    if request.method == 'POST' and form.validate():
-        customer = Customer.query.filter_by(first_name = form.first_name.data).first()
-        if customer and customer.email == form.email.data:
-            session['email'] = form.email.data
-            flash(f'Welcome {form.first_name.data}. You are logged-in.', 'success')
-            return redirect(request.args.get('next') or url_for('customer', id = customer.customer_id))
-        else:
-            flash(f'Wrong email. Please try again.', 'danger')
-    return render_template('customer/login.html', title = 'Customer Login Page', form=form)
-
 @app.route('/logout')
 def logout():
     logout_user()
@@ -138,6 +65,14 @@ def order_list():
         return redirect(url_for('home'))
     orders = Orders.query.all()
     return render_template('admin/order_list.html', title = 'Order List Page', orders = orders)
+
+#@app.route('/creditcards/')
+#def creditcards():
+#    if 'email' not in session:
+#        flash(f'Please login first','danger')
+#        return redirect(url_for('home'))
+#    creditcards = CreditCard.query.all()
+#    return render_template('admin/creditcards.html', title = 'Credit Card Page', creditcards = creditcards)
 
 @app.route('/suppliers')
 def suppliers():
