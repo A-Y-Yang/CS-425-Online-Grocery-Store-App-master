@@ -1,6 +1,6 @@
 from flask import render_template, session, request, redirect, url_for, flash, current_app
 from shop import app, db
-from shop.product.models import Product
+from shop.admin.models import Product, Customer
 
 def MergeDicts(dict1, dict2):
     if isinstance(dict1, list) and isinstance(dict2, list):
@@ -14,9 +14,9 @@ def addcart():
     try:
         product_id = request.form.get('product_id')
         quantity = request.form.get('quantity')
-        product = Product.query.filter_by(id=product_id).first()
+        product = Product.query.filter_by(product_id=product_id).first()
         if product_id and quantity and request.method == "POST":
-            DictItems = {product_id: {'name': product.name, 'price': product.price, 'quantity': quantity, 'image': product.image}}
+            DictItems = {product_id: {'name': product.product_name, 'price': float(product.price), 'quantity': quantity, 'image': product.image}}
             if 'Shoppingcart' in session:
                 print(session['Shoppingcart'])
                 if product_id in session['Shoppingcart']:
@@ -35,16 +35,16 @@ def addcart():
     finally:
         return redirect(request.referrer)
 
-@app.route('/cart')
-def getCart():
+@app.route('/cart/<int:id>', methods = ['GET'])
+def getCart(id):
+    customer = Customer.query.get_or_404(id)
     if 'Shoppingcart' not in session or len(session['Shoppingcart']) <=0:
         flash(f'Cart is empty. Please add item(s).', 'danger')
         return redirect(url_for('customer'))
     grandtotal = 0
     for key, product in session['Shoppingcart'].items():
-        grandtotal += int(product['price'])*int(product['quantity'])
-    
-    return render_template('product/cart.html', grandtotal = grandtotal)
+        grandtotal += float(product['price'])*int(product['quantity'])
+    return render_template('product/cart.html', grandtotal = grandtotal, customer = customer)
 
 @app.route('/updatecart/<int:code>', methods = ['POST'])
 def updateCart(code):
@@ -57,7 +57,7 @@ def updateCart(code):
             for key, item in session['Shoppingcart'].items():
                 if int(key) == code:
                     item['quantity'] = quantity
-                    flash(f'Item {item.name} is updated.')
+                    flash(f'Item {item.product_name} is updated.')
                     return redirect(url_for('getCart'))
         except Exception as e:
             print(e)

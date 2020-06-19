@@ -7,24 +7,28 @@
     <div class="row">
         <div class="col-md-4"></div>
         <div class="col-md-4">
-        <h1 class="text-center text-white bg-primary p-2">Registration</h1>
-        {% include '_messages.html' %}
-        <form method="post" enctype="multipart/form-data">
-        <dl>
-            {{ render_field(form.first_name, class="form-control") }}
-            {{ render_field(form.last_name, class="form-control") }}
-            {{ render_field(form.email, class="form-control") }}
-            {{ render_field(form.phone, class="form-control") }}
-            {{ render_field(form.address_line_one, class="form-control") }}
-            {{ render_field(form.address_line_two, class="form-control") }}
-            {{ render_field(form.address_city, class="form-control") }}
-            {{ render_field(form.address_state, class="form-control") }}
-            {{ render_field(form.address_zipcode, class="form-control") }}
-            {{ render_field(form.confirm, class="form-control") }}
-        </dl>
-        <p><input type=submit value=Register class="btn btn-primary">
-        </form>
-        <div class="col-md-4"></div>
+            <div class="text-center h1 text-white bg-info p-2">Staff Registration</div>
+            {% include '_messages.html' %}
+            <form method="post" enctype="multipart/form-data">
+            <div>
+                {{ render_field(form.first_name, class="form-control") }}
+                {{ render_field(form.last_name, class="form-control") }}
+                {{ render_field(form.email, class="form-control") }}
+                {{ render_field(form.phone, class="form-control") }}
+                {{ render_field(form.a_line_one, class="form-control") }}
+                {{ render_field(form.a_line_two, class="form-control") }}
+                {{ render_field(form.a_city, class="form-control") }}
+                {{ render_field(form.a_state, class="form-control") }}
+                {{ render_field(form.a_zipcode, class="form-control") }}
+                {{ render_field(form.salary, class="form-control") }}
+                {{ render_field(form.job_title, class="form-control") }}
+                {{ render_field(form.confirm, class="form-control") }}
+            </div>
+            <p><input type=submit value=Register class="btn btn-info">
+            </form>
+            <div class="col-md-4"></div>
+        </div>
+    </div>
 </div>
 
 {% endblock content %}

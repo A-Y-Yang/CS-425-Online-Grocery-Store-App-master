@@ -8,7 +8,7 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres1@localhost/cs425'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://master:cs425!ProjectGroup3@cs425-ogs-group-3.cnjzlkxau3i8.us-east-1.rds.amazonaws.com/postgres'
 app.config['SECRET_KEY'] = 'abcd1234'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(basedir, 'static/images')
@@ -29,5 +29,4 @@ login_manager.login_messgae = u"Please login first"
 
 from shop.admin import routes
 from shop.product import routes
-from shop.customer import routes
 from shop.cart import carts
