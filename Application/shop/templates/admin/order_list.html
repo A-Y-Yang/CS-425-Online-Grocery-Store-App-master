@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% include 'admin_navbar.html' %}
+
+<div class="container">
+    <table class="table table-sm table-condensed  table-striped">
+        <thead>
+            <th>Order ID</th>
+            <th>Customer ID</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{orders.order_id}}</td>
+                <td>{{orders.customer_id}}</td>
+                <td><a href="" class = "btn btn-sm btn-outline-info"> Edit </a></td>
+                <td>
+                  <button type = "button" class = "btn btn-danger btn-sm" data-toggle = "modal" data-target="#exampleModal-{{orders.order_id}}"> Delete </button>
+                </td>
+            </tr>
+            <!--Modal-->
+            <div class="modal fade" id="exampleModal-{{orders.order_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{{orders.order_id}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <p class="text"> Are you sure that you want to delete the orders ({{orders.order_id}})? </p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <form action="" method = "POST">
+                      <button type="button" class="btn btn-danger">Delete</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

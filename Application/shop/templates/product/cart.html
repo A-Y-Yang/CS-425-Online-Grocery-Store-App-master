@@ -25,7 +25,7 @@
                     <td>{{ product.price }}</td>
                     <form action="{{url_for('updateCart', code = key)}}" method = "POST">
                         <td><input type="number" name = "quantity" min="1" value = "{{ product.quantity }}"></td>
-                        {% set subtotal = product.quantity|int * product.price|int %}
+                        {% set subtotal = product.quantity|int * product.price|float %}
                         <td>{{ subtotal }}</td>
                         <td><button class = "btn btn-sm btn-outline-info">Update</button></td>
                     </form>
@@ -34,7 +34,7 @@
                 {% endfor %}
                 <tr>
                     <td></td>
-                    <td><a href="{{ url_for('customer')}}">Continue shopping</a></td>
+                    <td><a href="{{ url_for('customer', id = customer.customer_id)}}">Continue shopping</a></td>
                     <td colspan = "2"style="text-align:right">Grand Total: </td>
                     <td colspan = "1">${{grandtotal}}</td>
                     <td>
@@ -56,11 +56,11 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="customer-id" class="col-form-label">Customer ID</label>
-                                <input type="text" class="form-control" id="customer-id" value = "{{current_user.id}}" disabled>
+                                <input type="text" class="form-control" id="customer-id" value = "{{customer.customer_id}}" disabled>
                             </div>
                             <div class="form-group">
                                 <label for="customer-name" class="col-form-label">Customer Name</label>
-                                <input type="text" class="form-control" id="customer-name" value = "{{current_user.first_name}}" disabled>
+                                <input type="text" class="form-control" id="customer-name" value = "{{customer.first_name}} {{customer.last_name}}" disabled>
                             </div>
                             <div class="form-group">
                                 <label for="payment-card" class="col-form-label">Credit Card Number</label>

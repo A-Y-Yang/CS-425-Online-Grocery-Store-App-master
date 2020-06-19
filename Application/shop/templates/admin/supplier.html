@@ -1,7 +1,6 @@
 {% extends 'layout.html' %}
 {% block content %}
 
-{% include '_messages.html' %}
 {% include 'admin_navbar.html' %}
 
 <div class="container">
@@ -23,7 +22,7 @@
                 </td>
                 <td><a href="{{ url_for('updatesupplier', supplier_id=supplier.supplier_id)}}" class = "btn btn-sm btn-outline-info"> Edit </a></td>
                 <td>
-                  <button type = "button" class = "btn btn-danger btn-sm" data-toggle = "modal" data-target="#exampleModalLong-{{supplier.supplier_id}}"> Delete </button>
+                  <button type = "button" class = "btn btn-danger btn-sm" data-toggle = "modal" data-target="#exampleModal-{{supplier.supplier_id}}"> Delete </button>
                 </td>
             </tr>
             <!-- Long modal -->
@@ -64,7 +63,7 @@
               </div>
             </div>
             <!--Modal-->
-            <div class="modal fade" id="exampleModal-{{supplier.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="exampleModal-{{supplier.supplier_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -79,7 +78,7 @@
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <form action="{{url_for('deletesupplier',supplier_id=supplier.supplier_id)}}" method = "POST">
-                      <button type="button" class="btn btn-danger">Delete</button>
+                      <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                   </div>
                 </div>

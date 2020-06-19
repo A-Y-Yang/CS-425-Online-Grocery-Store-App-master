@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-md-4"></div>
         <div class="col-md-4">
-        <div class="text-center h1 text-white bg-primary p-2">Registration</div>
+        <div class="text-center h1 text-white bg-success p-2">Customer Registration</div>
         {% include '_messages.html' %}
         <form method="post" enctype="multipart/form-data">
         <dl>
@@ -22,7 +22,7 @@
             {{ render_field(form.da_zipcode, class="form-control") }}
             {{ render_field(form.confirm, class="form-control") }}
         </dl>
-        <p><input type=submit value=Register class="btn btn-primary">
+        <p><input type=submit value=Register class="btn btn-success">
         </form>
         <div class="col-md-4"></div>
 </div>

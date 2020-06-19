@@ -1,8 +1,8 @@
 from flask import render_template, session, request, redirect, url_for, flash
 from flask_login import login_required, logout_user, current_user
 from shop import app, db, login_manager
-from .forms import RegistrationForm, LoginForm, StaffRegistrationForm, Addsupplier, Addwarehouse
-from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders
+from .forms import RegistrationForm, LoginForm, StaffRegistrationForm, Addsupplier, Addwarehouse, Addsupplier_product, Addwarehouse_product
+from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders, Supplies
 import os
 
 @app.route('/')
@@ -17,13 +17,42 @@ def admin():
     products = Product.query.order_by(Product.product_name.asc()).all()
     return render_template('admin/index.html', title = 'Admin Page', products = products)
 
-@app.route('/customer')
-def customer():
+@app.route('/customer/<int:id>')
+def customer(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     products = Product.query.order_by(Product.product_name.asc()).all()
-    return render_template('customer/index.html', title = 'Customer Page', products = products)
+    customer = Customer.query.get_or_404(id)
+    return render_template('customer/index.html', title = 'Customer Page', products = products, customer = customer)
+
+@app.route('/profile/<int:id>', methods=['GET', 'POST'])
+def profile(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('login'))
+    customer = Customer.query.get_or_404(id)
+    form = RegistrationForm(request.form)
+    if request.method == 'POST' and form.validate():
+        customer = Customer(first_name = form.first_name.data, last_name = form.last_name.data,
+                    phone = form.phone.data, email = form.email.data, 
+                    da_line_one= form.da_line_one.data, 
+                    da_line_two = form.da_line_two.data,
+                    da_city = form.da_city.data, da_state = form.da_state.data,
+                    da_zipcode = form.da_zipcode.data)
+        db.session.commit()
+        flash(f'Your profile has been updated.', 'success')
+        return redirect({{url_for('customer', id = customer.customer_id)}})
+    form.first_name.data = customer.first_name
+    form.last_name.data = customer.last_name
+    form.phone.data = customer.phone
+    form.email.data = customer.email
+    form.da_line_one.data = customer.da_line_one
+    form.da_line_two.data = customer.da_line_two
+    form.da_city.data = customer.da_city
+    form.da_state.data = customer.da_state
+    form.da_zipcode.data = customer.da_zipcode
+    return render_template('customer/profile.html', title = "Profile Page", form = form, customer = customer)
 
 @app.route('/categories')
 def categories():
@@ -84,7 +113,7 @@ def customer_login():
         if customer and customer.email == form.email.data:
             session['email'] = form.email.data
             flash(f'Welcome {form.first_name.data}. You are logged-in.', 'success')
-            return redirect(request.args.get('next') or url_for('customer'))
+            return redirect(request.args.get('next') or url_for('customer', id = customer.customer_id))
         else:
             flash(f'Wrong email. Please try again.', 'danger')
     return render_template('customer/login.html', title = 'Customer Login Page', form=form)
@@ -134,6 +163,28 @@ def addsupplier():
         return redirect(url_for('suppliers'))
     return render_template('admin/addsupplier.html', title = "Add Supplier Page", form = form)
 
+@app.route('/addsupplier_p', methods=['GET', 'POST'])
+def addsupplier_p():
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    form = Addsupplier_product(request.form)
+    form.product_supplies.choices = [(p.product_id, p.product_name) for p in Product.query.all()]
+    if request.method == 'POST' and form.validate():
+        supplier = Supplier(name = form.name.data, phone = form.phone.data, email = form.email.data, 
+                    a_line_one = form.a_line_one.data, a_line_two = form.a_line_two.data, a_city = form.a_city.data,
+                    a_state = form.a_state.data, a_zipcode = form.a_zipcode.data)
+        db.session.add(supplier)
+        db.session.commit()
+        supplier_info = Supplier.query.filter_by(name = supplier.name).first()
+        supplies = Supplies(supplier_id = supplier_info.supplier_id, product_id = form.product_supplies.data,
+                            supplier_price = form.product_supplier_price.data)
+        db.session.add(supplies)
+        db.session.commit()
+        flash(f'Supplier {form.name.data} is added to your database.', 'success')
+        return redirect(url_for('suppliers'))
+    return render_template('admin/addsupplier copy.html', title = "Add Supplier Page", form = form)
+
 @app.route('/supplier_details/<int:id>', methods=['GET', 'POST'])
 def supplier_details(id):
     if 'email' not in session:
@@ -160,14 +211,14 @@ def updatesupplier(supplier_id):
         flash(f'This Supplier {form.name.data} has been updated', 'success')
         db.session.commit()
         return redirect(url_for('suppliers'))
-        form.name.data = supplier.name
-        form.phone.data = supplier.phone
-        form.email.data = supplier.email
-        form.a_line_one.data = supplier.a_line_one
-        form.a_line_two.data = supplier.a_line_two
-        form.a_city.data = supplier.a_city
-        form.a_state.data = supplier.a_state
-        form.a_zipcode.data = supplier.a_zipcode
+    form.name.data = supplier.name
+    form.phone.data = supplier.phone
+    form.email.data = supplier.email
+    form.a_line_one.data = supplier.a_line_one
+    form.a_line_two.data = supplier.a_line_two
+    form.a_city.data = supplier.a_city
+    form.a_state.data = supplier.a_state
+    form.a_zipcode.data = supplier.a_zipcode
     return render_template('admin/updatesupplier.html', title = "Update Supplier Page", form = form, supplier=supplier)
 
 @app.route('/deletesupplier/<int:supplier_id>', methods=["POST"])
@@ -175,7 +226,7 @@ def deletesupplier(supplier_id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
-    supplier = request.form.get('supplier')
+    supplier = Supplier.query.get_or_404(supplier_id)
     if request.method == "POST":
         db.session.delete(supplier)
         db.session.commit()
@@ -249,7 +300,8 @@ def deletewarehouse(warehouse_id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
-    warehouse = request.form.get('warehouse')
+    warehouse = Warehouse.query.get_or_404(warehouse_id)
+    print(warehouse)
     if request.method == "POST":
         db.session.delete(warehouse)
         db.session.commit()

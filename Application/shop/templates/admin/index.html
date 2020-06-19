@@ -27,7 +27,7 @@
             </tr>
             <!--Modal-->
             <div class="modal fade" id="exampleModal-{{product.product_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog" role="document">
+              <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">{{product.product_name}}</h5>
@@ -41,7 +41,7 @@
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <form action="{{url_for('deleteproduct',id=product.product_id)}}" method = "POST">
-                      <button type="button" class="btn btn-danger">Delete</button>
+                      <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                   </div>
                 </div>

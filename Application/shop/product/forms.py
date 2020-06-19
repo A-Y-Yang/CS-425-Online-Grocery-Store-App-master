@@ -3,7 +3,7 @@ from wtforms import Form, IntegerField, StringField, FloatField, TextAreaField, 
 
 class Addproduct(Form):
     product_name = StringField('Product Name', [validators.DataRequired()])
-    price = IntegerField('Price', [validators.DataRequired()])
+    price = FloatField('Price', [validators.DataRequired()])
     size = FloatField('Size',[validators.DataRequired()])
     #stock = IntegerField('Stock', [validators.DataRequired()])
     add_info = TextAreaField('Additional Information', [validators.DataRequired()])
