@@ -103,6 +103,22 @@ def product_details(id):
     product = Product.query.get_or_404(id)
     return render_template('product/product_details.html', product = product)
 
+@app.route('/supplier_details/<int:id>', methods=['GET', 'POST'])
+def supplier_details(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('login'))
+    supplier = Supplier.query.get_or_404(id)
+    return render_template('supplier/supplier_details.html', supplier = supplier)
+
+@app.route('/warehouse_details/<int:id>', methods=['GET', 'POST'])
+def warehouse_details(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('login'))
+    warehouse = Warehouse.query.get_or_404(id)
+    return render_template('warehouse/warehouse_details.html', warehouse = warehouse)
+
 @app.route('/addorder', methods=['GET', 'POST'])
 #@login_required
 def addorder():

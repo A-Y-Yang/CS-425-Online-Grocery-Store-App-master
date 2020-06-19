@@ -80,6 +80,24 @@ def suppliers():
     suppliers = Supplier.query.all()
     return render_template('admin/supplier.html', title = 'Supplier Page', suppliers = suppliers)
 
+@app.route('/addsupplier', methods=['GET', 'POST'])
+def addsupplier():
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('login'))
+    categories = Category.query.all()
+    form = Addsupplier(request.form)
+    if request.method == 'POST':
+        supplier = Supplier(name = form.name.data, email = form.email.data,
+                    phone = form.phone.data, address_line_one = form.address_line_one.data, 
+                    address_line_two = form.address_line_two.data, address_city = form.address_city.data, 
+                    address_state = form.address_state.data, address_zipcode = form.address_zipcode.data)
+        db.session.add(supplier)
+        db.session.commit()
+        flash(f'{form.name.data} is added to your database.', 'success')
+        return redirect(url_for('admin'))
+    return render_template('supplier/addsupplier.html', title = "Add Supplier Page", form = form, categories = categories)
+
 @app.route('/updatesupplier/<int:supplier_id>', methods=['GET', 'POST'])
 def updatesupplier(supplier_id):
     if 'email' not in session:
@@ -114,6 +132,26 @@ def warehouses():
         return redirect(url_for('login'))
     warehouses = Warehouse.query.all()
     return render_template('admin/warehouse.html', title = 'Warehouse Page', warehouses = warehouses)
+
+@app.route('/addwarehouse', methods=['GET', 'POST'])
+def addwarehouse():
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('login'))
+    categories = Category.query.all()
+    form = Addwarehouse(request.form)
+    if request.method == 'POST':
+        
+        warehouse = Warehouse(name = form.name.data, address_line_one = form.address_line_one.data, 
+                    address_line_two = form.address_line_two.data, address_city = form.address_city.data, 
+                    address_state = form.address_state.data, address_zipcode = form.address_zipcode.data,
+                    capacity = form.capacity.data, capacity_used = form.capacity_used.data, 
+                    capacity_remained = form.capacity_remained.data)
+        db.session.add(warehouse)
+        db.session.commit()
+        flash(f'{form.name.data} is added to your database.', 'success')
+        return redirect(url_for('admin'))
+    return render_template('warehouse/addpWarehouse.html', title = "Add Warehouse Page", form = form, categories = categories)
 
 @app.route('/updatewarehouse/<int:warehouse_id>', methods=['GET', 'POST'])
 def updatewarehouse(warehouse_id):

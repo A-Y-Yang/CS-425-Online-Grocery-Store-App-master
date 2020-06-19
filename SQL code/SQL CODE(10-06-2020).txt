@@ -1,0 +1,242 @@
+﻿create table Customer
+        (Customer_ID                        char(10) NOT NULL,
+         First_Name                        varchar(​20​)​ NOT NULL​,
+          Last_Name                        varchar(​20​) ​NOT NULL​,
+         Customer_Phone_Number        char(10),
+         Customer_Email                varchar(50),
+         Payment_Total                smallint check ​(Payment_Total >=0),
+         Paid_Total                         smallint check ​(Paid_Total >=0),
+         Balance                        smallint check ​(Balance >=0),
+         DA_Line_One                        varchar(100),
+         DA_Line_Two                        varchar(100),
+         DA_City                        varchar(50),
+         DA_State                        varchar(25),
+         DA_Zipcode                        char(5),
+         primary key(Customer_ID));
+
+
+create table Credit_Card
+        (Card_Number                char(16) NOT NULL,
+         Card_Owner_Name        varchar(​40)​, 
+         Card_Expire_Date        char(​5)​,                         
+         Card_CVV                char(​3)​,
+         CBA_Line_One                varchar(100),
+         CBA_Line_Two        varchar(100),
+         CBA_State                varchar(25),
+         CBA_Zipcode                varchar(10),
+         primary key (Card_Number),
+         foreign key (Customer_ID) references Customer);
+
+
+create table Order
+        (Order_ID                        char(20) NOT NULL,
+         Customer_ID                        char(20),
+         Payment_Card_Number        varchar(16),
+         Ordering_Total                smallint check ​(Ordering_Total >=0),
+         Status                                varchar(8),
+         primary key (Order_ID), 
+         foreign key (Customer_ID) references Customer,
+         foreign key (Payment_Card_Number) references Credit_Card (Card_Number));
+
+
+create table PaidWith 
+        (Order_ID                char(20),
+Card_Number                char(16), 
+             primary key (Order_ID, Card_Number)
+             foreign key (Order_ID) references Order
+             foreign key (Card_Number) references Credit_Card);
+
+
+create table Staff
+        (Staff_ID                char(20) NOT NULL​,
+         First_Name                varchar(​20​)​ NOT NULL​,
+ Last_Name                varchar(​20​) ​NOT NULL​,
+            A_Line_One                varchar(100),
+         A_Line_Two                varchar(100),
+         A_City                        varchar(50),
+         A_State                varchar(25),
+         A_Zipcode                char(5),
+         Staff_Phone_Number        char(10),
+         Staff_Email                varchar(50),
+         Salary                        int,             
+         Job_Title                varchar(​20​)​
+         primary key (Staff_ID));
+
+
+create table Product 
+        (Product_ID                char(20) NOT NULL​,
+         Product_Name        varchar(30),
+         Category                varchar(30),
+         Size                        float(8),
+         primary key (Product_ID));
+
+
+create table Label 
+        (Product_ID                        char(20),
+         Category                        varchar(30),
+         Additional_information        varchar(150),
+         primary key (Product_ID));
+
+
+create table Warehouse 
+        (Warehouse_ID                char(20),
+         Warehouse_Name                varchar(20),
+         A_Line_One                        varchar(100),
+         A_Line_Two                        varchar(100),
+         A_City                                varchar(50),
+         A_State                        varchar(25),
+         A_Zipcode                        char(5),
+         Capacity                        float(8) check ​(Capacity >=0),
+         Capacity_Used                        float(8) check ​(Capacity_Used >=0),
+         Capacity_remained                float(8) check ​(Capacity_remained >=0),
+         primary key (Warehouse_ID));
+
+
+create table Product_Price
+        (Product_ID                char(20),
+         Delivery_State                varchar(25),
+         Unit_Price                smallint,
+         primary key (Product_ID, Delivery_State),
+         foreign key (Product_ID) references Product        );
+
+
+create table Supplier
+        (Supplier_ID                char(20),
+         Name                        varchar(20),
+         Supplier_Emai        l        varchar(50),
+         Supplier_Number        char(10),
+         A_Line_One                varchar(100),
+         A_Line_Two                varchar(100),
+         A_City                        varchar(50),
+         A_State                varchar(25),
+         A_Zipcode                char(5),
+         primary key (Supplier_ID));
+
+
+create table Order_Item
+        (Order_ID                char(20),
+         Product_ID                char(20),
+         Quantity                      int check ​(Quantity  >0),
+         Unit_Price                smallint,
+         Subtotal                int,
+         primary key (Order_ID, Product_ID),
+        foreign key (Order_ID) references Order,
+        foreign key (Product_ID) references Product);
+
+
+create table Order_Item_Warehouse_ID
+( Order_ID                char(20),
+         Product_ID                char(20),
+              Warehouse_ID                char(20),
+              primary key (Order_ID, Product_ID, Warehouse_ID),
+               foreign key (Order_ID) references Order,
+         foreign key (Product_ID) references Product,
+         foreign key (Warehouse_ID) references Warehouse);
+
+
+create table Supplier_Item 
+        (Supplier_ID                char(20),
+         Product_ID                char(20),
+         Supplier_Price                smallint,
+         primary key (Product_ID)
+         foreign key (Supplier_ID) references Supplier,
+         foreign key (Product_ID) references Product);
+
+
+create table Owns 
+        (Customer_ID                char(20),
+         Card_Number                char(16),
+         foreign key (Customer ID) references Customer
+         foreign key (Card_Number) references Credit_Card);
+
+
+create table Pricing 
+        (Staff_ID                char(20),
+        Product_ID                char(20),
+        Delivery_State                varchar(25),
+        New_Price                smallint check ​(New_Price  >0),
+        Primary key(Product_ID, Delivery_State),
+        foreign key (Staff_ID) references Staff,
+        foreign key (Product_ID, Delivery_State) references Product_Price);
+
+
+create table Stock 
+        (Product_ID                char(20),
+         Warehouse_ID                char(20),
+         Item_Quantity                int check ​(Item_Quantity  >= 0),
+         Size_Total                float(8),
+         primary key (Product_ID, Warehouse_ID),
+        foreign key (Product_ID) references Product,
+        foreign key (Warehouse_ID) references Warehouse);
+
+
+create table Add_Stock 
+        (Staff_ID                char(20),
+        Product_ID                char(20),
+        Warehouse_ID                char(20),
+        Add_Quantity                int check ​(Add_Quantity  >0),
+        Add_Size                float(8),
+primary key (Product_ID, Warehouse_ID),
+        foreign key (Staff_ID) references Staff,
+        foreign key (Product_ID, Warehouse_ID) references Stock);
+
+
+create table Request
+        (Staff_ID                char(20),
+         Supplier_ID                char(20),
+         Details                varchar(100),
+        primary key (Staff_ID, Supplier, Details),
+         foreign key (Staff_ID) references Staff,
+         foreign key (Supplier_ID) references Supplier);
+
+
+create table Ordering
+        (Customer_ID                char(20),
+         Order_ID                char(20),
+         Staff_ID                char(20), 
+        primary key (Customer_ID, Order_ID, Staff_ID),
+         foreign key (Customer_ID) references Customer,
+         foreign key (Order_ID) references Order,
+         foreign key (Staff_ID) references Staff);
+
+
+
+
+Create table Availability 
+(Product_ID                char(20),
+Warehouse_ID                char(20),
+        Item_Quantity                int check ​(Item_Quantity  >=0),
+Primary key(Product_ID, Warehouse_ID, Item_Quantity)
+foreign key (Product_ID) references Product,
+         foreign key (Warehouse_ID) references Warehouse,
+         foreign key (Item_Quantity) references Stock);
+
+
+Create table Includes
+        (Order_ID                char(20),
+        Product_ID                char(20),
+        Quantity                int​ (Quantity  >0),
+        primary key (Order_ID, Product_ID),
+        foreign key (Order_ID) references Order,
+        foreign key (Product_ID) references Product);
+
+
+Create table Supplies
+        (Supplier_ID                char(20),
+Product_ID                char(20),
+        Supplier_Price                smallint,
+Primary key(Product_ID, Warehouse_ID, Supplier_Price)
+foreign key (Supplier_ID) references Supplier,
+         foreign key (Product_ID) references Product,
+         foreign key (Supplier_Price) references Supplier_Item);
+
+
+
+
+Create table Stores
+(Product_ID                char(20),
+Warehouse_ID                char(20),
+Size_total                float(8),
+primary key (Product_ID, Warehouse_ID),
+foreign key (Product_ID) references Product,
+foreign key (Warehouse_ID) references Warehouse);
