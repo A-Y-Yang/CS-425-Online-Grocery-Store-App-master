@@ -2,7 +2,7 @@ from flask import render_template, session, request, redirect, url_for, flash
 from flask_login import login_required, logout_user, current_user
 from shop import app, db, login_manager
 from shop.admin.forms import RegistrationForm, LoginForm
-from shop.admin.models import Customer, Product, Category, Orders, CreditCard, Owns
+from shop.admin.models import Customer, Product, Category, Orders, CreditCard, Owns, Product, OrderItem
 from .forms import AddcardForm, Checkout
 import os
 
@@ -11,7 +11,7 @@ def customer(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
-    products = Product.query.order_by(Product.product_name.asc()).all()
+    products = Product.query.order_by(Product.product_name.desc()).all()
     customer = Customer.query.get_or_404(id)
     return render_template('customer/index.html', title = 'Customer Page', products = products, customer = customer)
 
@@ -71,6 +71,25 @@ def profile(id):
     form.da_zipcode.data = customer.da_zipcode
     return render_template('customer/profile.html', title = "Profile Page", form = form, customer = customer)
 
+@app.route('/orders/<int:id>', methods = ['GET'])
+def order_history(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    customer = Customer.query.get_or_404(id)
+    orders = Orders.query.filter_by(customer_id = id).all()
+    return render_template('customer/orders.html', title = 'Order History Page', orders = orders, customer = customer)
+
+@app.route('/orders/<int:id>/<int:order_id>', methods = ['GET'])
+def order_history_details(id, order_id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    customer = Customer.query.get_or_404(id)
+    order = Orders.query.filter_by(order_id = order_id).first()
+    products = db.session.query(Product.product_id,Product.product_name,Product.price,Product.image,OrderItem.quantity, OrderItem.subtotal).filter(OrderItem.order_id == order_id, Product.product_id == OrderItem.product_id)
+    return render_template('customer/order_history.html', title = 'Order Details Page', order = order, products = products, customer = customer)
+
 @app.route('/categories')
 def categories():
     if 'email' not in session:
@@ -107,7 +126,8 @@ def creditcards(id):
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     customer = Customer.query.get_or_404(id)
-    creditcards = Owns.query.filter_by(customer_id = id)
+    customer_cards = db.session.query(Owns.card_number).filter(Owns.customer_id == id).subquery()
+    creditcards = db.session.query(CreditCard).filter(CreditCard.card_number.in_(customer_cards))
     return render_template('customer/creditcards.html', title = 'Credit Card Page', creditcards = creditcards, customer = customer)
 
 @app.route('/updatecards/<int:id>/<int:card_number>', methods=['GET', 'POST'])

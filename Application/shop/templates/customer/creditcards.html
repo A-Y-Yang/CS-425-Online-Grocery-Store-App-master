@@ -14,7 +14,7 @@
         <tbody>
             {% for creditcard in creditcards %}
             <tr>
-                <td>{{creditcard.card_number}}</td>
+                <td> {{creditcard.card_number}} </td>
                 <td>
                   <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#exampleModalLong-{{creditcard.card_number}}">Details</button>
                 </td>
@@ -64,7 +64,7 @@
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">{{creditcard.card_number}}</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Card</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>

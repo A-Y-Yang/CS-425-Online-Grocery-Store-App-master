@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, session, current_app
 from shop import app, db, photos, login_manager
 from flask_login import login_required, logout_user, current_user
-from shop.admin.models import Category, Product, Orders, OrderItem
+from shop.admin.models import Category, Product, Orders, OrderItem, Owns, Customer
 from shop.customer.forms import Checkout
 from .forms import Addproduct
 import os
@@ -55,7 +55,7 @@ def addproduct():
 def updateproduct(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('customer_login'))
     categories = Category.query.all()
     product = Product.query.get_or_404(id)
     form = Addproduct(request.form)
@@ -80,7 +80,7 @@ def updateproduct(id):
 def deleteproduct(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
-        return redirect(url_for('login'))
+        return redirect(url_for('customer_login'))
     product = Product.query.get_or_404(id)
     if request.method == "POST":
         try:
@@ -102,27 +102,41 @@ def product_details(id):
     product = Product.query.get_or_404(id)
     return render_template('product/product_details.html', product = product)
 
-@app.route('/addorder', methods=['GET', 'POST'])
-#@login_required
-def addorder():
-    if current_user.is_authenticated:
-        customer_id = current_user.id
-        try:
-            form = Checkout(request.form)
-            for key, product in session['Shoppingcart'].items():
-                grandtotal += int(product['price'])*int(product['quantity'])
-            order = CustomerOrder(customer_id = customer_id, payment_card_number = form.payment_card_number.data, order_grand_total = grandtotal)
-            db.session.add(order)
-            for key, product in session['Shoppingcart'].items():
-                orderitem = OrderItem(order_id = order.order_id, customer_id = customer_id, quantity = product['quantity'], unit_price = product['unit_price'],subtotal = product['subtotal'])
-                db.session.add(orderitem)
-            flash(f'Your order has been issued', 'success')
-            order.status = "issued"
-            db.session.commit()
-            return redirect(url_for('customer'))
-        except Exception as e:
-            print(e)
-            flash('Some thing went wrong while get order','danger')
-            return redirect(url_for('getCart'))
+#@app.route('/getorder')
+#def getOrder():
+#    if current_user.is_authenticated:
+#        customer_id = current_user.id
+#        try:
+#            order = Order(customer_id= customer_id, orders=session['Shoppingcart'])
+
+@app.route('/addorder/<int:id>', methods=['GET', 'POST'])
+def addorder(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('login'))
+    #if current_user.is_authenticated:
+    try:
+        form = Checkout(request.form)
+        grandtotal = 0
+        for key, product in session['Shoppingcart'].items():
+            grandtotal += float(product['price'])*int(product['quantity'])
+        order = Orders(customer_id = id, payment_card_number = form.payment_card_number.data, ordering_total = grandtotal)
+        db.session.add(order)
+        db.session.commit()
+        for key, product in session['Shoppingcart'].items():
+            orderitem = OrderItem(order_id = order.order_id, product_id = int(key),
+                                quantity = product['quantity'], unit_price = product['price'])
+            db.session.add(orderitem)
+        flash(f'Your order has been issued', 'success')
+        customer = Customer.query.get_or_404(id)
+        customer.payment_total += grandtotal
+        db.session.commit()
+        session.pop('Shoppingcart')
+        return redirect(url_for('customer', id = id))
+    except Exception as e:
+        print(e)
+        flash('Somethings went wrong while get order','danger')
+        return redirect(url_for('getCart', id = id))
+    #return redirect(url_for('customer',id = customer_id))
             
             

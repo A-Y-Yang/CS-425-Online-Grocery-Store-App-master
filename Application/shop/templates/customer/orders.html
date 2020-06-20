@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% include 'customer_navbar.html' %}
+
+<div class="container">
+    <table class="table table-sm table-condensed  table-striped">
+        <thead>
+            <th>Order ID</th>
+            <th>Order Date</th>
+            <th>Status</th>
+            <th>Details</th>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td> {{order.order_id}} </td>
+                <td> {{order.date_created}} </td>
+                <td> {{order.status}} </td>
+                <td><a href="{{ url_for('order_history_details', id = customer.customer_id, order_id = order.order_id)}}" class = "btn btn-outline-info btn-sm">Details</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

@@ -64,6 +64,10 @@ def order_list():
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     orders = Orders.query.all()
+    if request.method == 'POST':
+        order = Orders(order_id = request.form.get(id), status = request.form.get('received'))
+        db.session.commit()
+        flash(f'The order status is changed to "received".', 'success')
     return render_template('admin/order_list.html', title = 'Order List Page', orders = orders)
 
 #@app.route('/creditcards/')
@@ -112,6 +116,7 @@ def addsupplier_p():
         db.session.add(supplier)
         db.session.commit()
         supplier_info = Supplier.query.filter_by(name = supplier.name).first()
+        product_name = request.form.get('product_name')
         supplies = Supplies(supplier_id = supplier_info.supplier_id, product_id = form.product_supplies.data,
                             supplier_price = form.product_supplier_price.data)
         db.session.add(supplies)

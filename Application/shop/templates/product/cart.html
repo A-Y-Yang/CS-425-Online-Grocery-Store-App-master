@@ -4,7 +4,6 @@
 {% include "customer_navbar.html" %} 
 
 <div class="container mt-4">
-    {% include "_messages.html" %}
     <div class="row">
         <div class="col-md-12">
         <table class="table table-sm">
@@ -51,11 +50,11 @@
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    
-                    <form action="{{ url_for('addorder')}}" method = "POST">
+                    {% from "_formhelpers.html" import render_field %}  
+                    <form action="{{ url_for('addorder', id = customer.customer_id)}}" method = "POST">
                         <div class="modal-body">
                             <div class="form-group">
-                                <label for="customer-id" class="col-form-label">Customer ID</label>
+                                <label for="customer-id" class="col-form-label-bold">Customer ID</label>
                                 <input type="text" class="form-control" id="customer-id" value = "{{customer.customer_id}}" disabled>
                             </div>
                             <div class="form-group">
@@ -63,8 +62,8 @@
                                 <input type="text" class="form-control" id="customer-name" value = "{{customer.first_name}} {{customer.last_name}}" disabled>
                             </div>
                             <div class="form-group">
-                                <label for="payment-card" class="col-form-label">Credit Card Number</label>
-                                <input class="form-control" id="payment-card" type = "text" minlength="16" maxlength="16">
+                                <label for="payment-card-number" class="col-form-label">Select the Card for Payment</label>
+                                    {{ render_field(form.payment_card_number, class="form-control") }}
                             </div>
                         </div>
                         <div class="modal-footer">

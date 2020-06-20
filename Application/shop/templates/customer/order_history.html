@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% include 'customer_navbar.html' %}
+
+<div class="container">
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-md-2">
+        <label for="order-id" class="text h4 text-black p-2">Order Summary</label>
+      </div>
+      <div class="col-md-2">
+        <label for="order-id" class="col-form-label">Order ID</label>
+        <input type="text" id="customer-id" value = "{{order.order_id}}" disabled>
+      </div>
+      <div class="col-md-3">
+        <label for="order-date" class="col-form-label">Order Date</label>
+        <input type="text"  id="customer-id" value = "{{order.date_created}}" disabled>
+      </div>
+      <div class="col-md-2">
+        <label for="order-date" class="col-form-label">Card for Payment</label>
+        <input type="text" id="customer-id" value = "{{order.payment_card_number}}"disabled>
+      </div>
+      <div class="col-md-2">
+        <label for="order-date" class="col-form-label">Status</label>
+        <input type="text" id="customer-id" value = "{{order.status}}" disabled>
+      </div>
+    </div>
+    <hr>
+    <table class="table table-sm table-condensed  table-striped">
+        <thead>
+          <th>Sequence</th>
+          <th>Image</th>
+          <th>Product Name</th>
+          <th>Unit Price ($)</th>
+          <th>Quantity</th>
+          <th>Subtotal ($)</th>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+              <td>{{loop.index}}</td>
+              <td><img src = "{{ url_for('static', filename = 'images/'+ product.image) }}" width = "50" height = "40"></td>
+              <td>{{product.product_name}}</td>
+              <td>{{product.price}}</td>
+              <td>{{product.quantity}}</td>
+              <td>{{product.subtotal}}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td colspan = "2"style="text-align:right">Grand Total: </td>
+              <td colspan = "1">${{order.ordering_totall}}</td>
+          </tr>
+        </tbody>
+    </table>
+    <a href="{{ url_for('order_history', id = customer.customer_id)}}" class = "btn btn-secondary btn-small float-right" data-dismiss="modal">Close</a>
+</div>
+{% endblock content %}
