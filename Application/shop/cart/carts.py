@@ -1,6 +1,7 @@
 from flask import render_template, session, request, redirect, url_for, flash, current_app
 from shop import app, db
-from shop.admin.models import Product, Customer
+from shop.admin.models import Product, Customer, Owns, CreditCard
+from shop.customer.forms import Checkout
 
 def MergeDicts(dict1, dict2):
     if isinstance(dict1, list) and isinstance(dict2, list):
@@ -38,13 +39,17 @@ def addcart():
 @app.route('/cart/<int:id>', methods = ['GET'])
 def getCart(id):
     customer = Customer.query.get_or_404(id)
+    customer_cards = db.session.query(Owns.card_number).filter(Owns.customer_id == id).subquery()
+    creditcards = db.session.query(CreditCard).filter(CreditCard.card_number.in_(customer_cards))
+    form = Checkout(request.form)
+    form.payment_card_number.choices = [(c.card_number, c.card_number) for c in creditcards]
     if 'Shoppingcart' not in session or len(session['Shoppingcart']) <=0:
         flash(f'Cart is empty. Please add item(s).', 'danger')
         return redirect(url_for('customer'))
     grandtotal = 0
     for key, product in session['Shoppingcart'].items():
-        grandtotal += float(product['price'])*int(product['quantity'])
-    return render_template('product/cart.html', grandtotal = grandtotal, customer = customer)
+        grandtotal += round(float(product['price'])*int(product['quantity']),2)
+    return render_template('product/cart.html', grandtotal = grandtotal, customer = customer, form = form, creditcards = creditcards)
 
 @app.route('/updatecart/<int:code>', methods = ['POST'])
 def updateCart(code):

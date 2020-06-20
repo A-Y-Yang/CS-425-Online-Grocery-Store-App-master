@@ -8,15 +8,23 @@
         <thead>
             <th>Order ID</th>
             <th>Customer ID</th>
-            <th>Edit</th>
+            <th>Status</th>
+            <th>Details</th>
+            <th>Change Status</th>
             <th>Delete</th>
         </thead>
         <tbody>
             {% for order in orders %}
             <tr>
-                <td>{{orders.order_id}}</td>
-                <td>{{orders.customer_id}}</td>
-                <td><a href="" class = "btn btn-sm btn-outline-info"> Edit </a></td>
+                <td>{{order.order_id}}</td>
+                <td>{{order.customer_id}}</td>
+                <td>{{order.status}}</td>
+                <td><a href="{{url_for('order_history_details', id = order.customer_id, order_id = order.order_id)}}" class = "btn btn-sm btn-outline-primary"> Details </a></td>
+                <td>
+                  <form action="" class = "received" id = "{{order.order_id}}" method = "POST">
+                    <button type="button" class="btn btn-sm btn-info">Received</button>
+                  </form>
+                </td>
                 <td>
                   <button type = "button" class = "btn btn-danger btn-sm" data-toggle = "modal" data-target="#exampleModal-{{orders.order_id}}"> Delete </button>
                 </td>
@@ -26,13 +34,13 @@
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">{{orders.order_id}}</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Order #{{order.order_id}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                   <div class="modal-body">
-                    <p class="text"> Are you sure that you want to delete the orders ({{orders.order_id}})? </p>
+                    <p class="text"> Are you sure that you want to delete the order ({{order.order_id}})? </p>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>

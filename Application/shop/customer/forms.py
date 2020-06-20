@@ -1,4 +1,6 @@
-from wtforms import Form, IntegerField, StringField, PasswordField, validators, SelectField
+from wtforms import Form, IntegerField, StringField, validators, SelectField, RadioField 
+from shop import db
+import json
 
 class AddcardForm(Form):
     card_number = StringField('Card Nunber', [validators.Length(min=16, max=16), validators.DataRequired()])
@@ -11,7 +13,18 @@ class AddcardForm(Form):
     CBA_state = StringField('State', [validators.Length(min=2, max=25), validators.DataRequired()])
     CBA_zipcode = StringField('Zip Code (5-digit)', [validators.Length(min=5, max=5), validators.DataRequired()])
 
+class JsonEncodedDict(db.TypeDecorator):
+    impl = db.Text
+    def set_value(self, value, dialect):
+        if value is None:
+            return '{}'
+        else:
+            return json.dumps(value)
+    def get_value(self, value, dialect):
+        if value is None:
+            return json.loads(value)
+
 class Checkout(Form):
     customer_id = IntegerField('Customer ID', [validators.DataRequired()])
     customer_name = StringField('Customer Name', [validators.DataRequired()])
-    payment_card_number = StringField('Debit/Credit Card Number',[validators.Length(min=16, max=16),validators.DataRequired()])
+    payment_card_number = SelectField('Debit/Credit Card Number',coerce=int)
