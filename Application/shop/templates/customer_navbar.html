@@ -14,8 +14,15 @@
             <li class="nav-item active">
               <a class="nav-link" href="{{ url_for('customer', id = customer.customer_id)}}">All Products <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Category</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-target="#dropdown-target" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Category 
+              </a>
+              <div id="dropdown-target" class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{{url_for('food_list', id = customer.customer_id)}}" >Food</a>
+                <a class="dropdown-item" href="{{url_for('alcohol_list', id = customer.customer_id)}}" >Alcoholic Beverage</a>
+                <a class="dropdown-item" href="{{url_for('nonalcohol_list', id = customer.customer_id)}}">Non-alcoholic Beverage</a>
+              </div>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-target="#dropdown-target" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

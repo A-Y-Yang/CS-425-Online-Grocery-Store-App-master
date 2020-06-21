@@ -1,9 +1,10 @@
 from flask import render_template, session, request, redirect, url_for, flash
 from flask_login import login_required, logout_user, current_user
 from shop import app, db, login_manager
-from .forms import RegistrationForm, LoginForm, StaffRegistrationForm, Addsupplier, Addwarehouse, Addsupplier_product, Addwarehouse_product
-from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders, Supplies, CreditCard, AddStock
+from .forms import RegistrationForm, LoginForm, StaffRegistrationForm, Addsupplier, Addwarehouse
+from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders, CreditCard, Stock, AddStock, SupplierItem
 import os
+from decimal import Decimal
 
 @app.route('/')
 def home():
@@ -102,29 +103,6 @@ def addsupplier():
         return redirect(url_for('suppliers'))
     return render_template('admin/addsupplier.html', title = "Add Supplier Page", form = form)
 
-@app.route('/addsupplier_p', methods=['GET', 'POST'])
-def addsupplier_p():
-    if 'email' not in session:
-        flash(f'Please login first','danger')
-        return redirect(url_for('home'))
-    form = Addsupplier_product(request.form)
-    form.product_supplies.choices = [(p.product_id, p.product_name) for p in Product.query.all()]
-    if request.method == 'POST' and form.validate():
-        supplier = Supplier(name = form.name.data, phone = form.phone.data, email = form.email.data, 
-                    a_line_one = form.a_line_one.data, a_line_two = form.a_line_two.data, a_city = form.a_city.data,
-                    a_state = form.a_state.data, a_zipcode = form.a_zipcode.data)
-        db.session.add(supplier)
-        db.session.commit()
-        supplier_info = Supplier.query.filter_by(name = supplier.name).first()
-        product_name = request.form.get('product_name')
-        supplies = Supplies(supplier_id = supplier_info.supplier_id, product_id = form.product_supplies.data,
-                            supplier_price = form.product_supplier_price.data)
-        db.session.add(supplies)
-        db.session.commit()
-        flash(f'Supplier {form.name.data} is added to your database.', 'success')
-        return redirect(url_for('suppliers'))
-    return render_template('admin/addsupplier copy.html', title = "Add Supplier Page", form = form)
-
 @app.route('/supplier_details/<int:id>', methods=['GET', 'POST'])
 def supplier_details(id):
     if 'email' not in session:
@@ -174,7 +152,6 @@ def deletesupplier(supplier_id):
         return redirect(url_for('suppliers'))
     flash(f'Cannot delete the supplier.','danger')
     return render_template(url_for('suppliers'))
-
 
 @app.route('/warehouses')
 def warehouses():
@@ -261,12 +238,51 @@ def addstock():
     if request.method == "POST":
         stock = request.form.get('product_id')
         quantity = request.form.get('quantity')
-        size = Product.query(size).filter_by(product_id = stock)
-        product_name = Product.query(product_name).filter_by(product_id = stock)
+        product = Product.query.filter_by(product_id = stock).first()
         addstock = AddStock(staff_id = request.form.get('staff_id'), product_id = request.form.get('product_id'),
                             warehouse_id = request.form.get('warehouse_id'), add_quantity = quantity,
-                            add_size = int(quantity)*float(size))
-        db.session.add(addstock)
-        db.session.commit()
-        flash(f'New stock {product_name} is added.', 'success')
+                            add_size = int(quantity)*float(product.size))
+        if (Stock.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id).first() is None):
+            newstock = Stock(product_id = addstock.product_id, warehouse_id = addstock.warehouse_id, 
+                            item_quantity = quantity, size_total = int(quantity)*float(product.size))
+            db.session.add(newstock)
+            db.session.add(addstock)
+            updatewh = Warehouse.query.get_or_404(addstock.warehouse_id)
+            updatewh.capacity_used += Decimal(addstock.add_size)
+            db.session.commit()
+            flash(f'New item {product.product_name} is added into Stock.', 'success')
+        elif (AddStock.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id).first() is None):
+            db.session.add(addstock)
+            updatestock = Stock.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id)
+            updatestock.item_quantity += addstock.add_quantity
+            updatewh = Warehouse.query.get_or_404(addstock.warehouse_id)
+            updatewh.capacity_used += Decimal(addstock.add_size)
+            db.session.commit()
+            flash(f'New stock of {product.product_name} is added.', 'success')
+        else:
+            updatestock = Stock(product_id = request.form.get('product_id'), warehouse_id = request.form.get('warehouse_id'))
+            updatestock.item_quantity += addstock.add_quantity
+            updatestock.size_total += addstock.add_size
+            updatewh = Warehouse.query.get_or_404(addstock.warehouse_id)
+            updatewh.capacity_used += Decimal(addstock.add_size)
+            db.session.commit()
+            flash(f'More stock {product.product_name} is added.', 'success')
     return render_template('admin/addstock.html', title = "Add Stock Page", warehouses = warehouses, products = products)
+
+@app.route('/supplierprice', methods = ['GET', 'POST'])
+def supplierprice():
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    suppliers = Supplier.query.all()
+    products = Product.query.all()
+    if request.method == "POST":
+        newprice = SupplierItem(supplier_id = request.form.get('supplier_id'),product_id = request.form.get('product_id'),
+                                supplier_price = request.form.get('newprice'))
+        if (SupplierItem.query.filter_by(supplier_id = newprice.supplier_id).filter_by(product_id = newprice.product_id).first() is None):
+            db.session.add(newprice)
+            db.session.commit()
+        else:
+            db.session.commit()
+        flash(f'New price is updated.', 'success')
+    return render_template('admin/supplier_newprice.html', title = "Supplier Price Page", suppliers = suppliers, products = products)

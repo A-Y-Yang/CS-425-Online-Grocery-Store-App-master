@@ -13,24 +13,19 @@
             <th>Update</th>
         </thead>
         <tbody>
-            {% for product in products %} 
+          {% for product in products %} 
             <tr>
                 <td>{{product.product_id}}</td>
                 <td>{{product.product_name}}</td>
                 <form action="" method = "POST">
                   <td>
-                    <input type = "hidden" id="staff_id" name="staff_id" value="123"></input>
+                    <input type = "hidden" id="staff_id" name="staff_id" value="2000001"></input>
                     <input type = "hidden" id="product_id" name="product_id" value="{{ product.product_id }}"></input>
-                    <div class="dropdown">
-                      <button class="btn btn-secondary btn-sm dropdown-toggle" id="dropdown1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Select a warehouse
-                      </button>
-                      <ul class="dropdown-menu" aria-labelledby="dropdown1">
-                        {% for warehouse in warehouses %}
-                            <li><a value="{{warehouse.warehouse_id}}">{{warehouse.warehouse_id}}</a></li>
-                        {% endfor %}
-                      </ul>
-                    </div>
+                    <select name="warehouse_id" id="warehouse_id">
+                      {% for warehouse in warehouses %}
+                        <option value="{{warehouse.warehouse_id}}">{{warehouse.name}} ({{warehouse.a_state}})</option>
+                      {% endfor %}
+                    </select>
                   </td>
                   <td>
                     <input type = "number" name ="quantity" value = "1" min = "1"></input>
@@ -40,7 +35,7 @@
                   </td>
                 </form>
             </tr>
-            {% endfor %}
+          {% endfor %}
         </tbody>
     </table>
 </div>
