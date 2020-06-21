@@ -15,6 +15,35 @@ def customer(id):
     customer = Customer.query.get_or_404(id)
     return render_template('customer/index.html', title = 'Customer Page', products = products, customer = customer)
 
+
+@app.route('/foodpage/<int:id>')
+def foodpage(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    products = Product.query.filter(Product.category_id==1).all()
+    customer = Customer.query.get_or_404(id)
+    return render_template('customer/food.html', title = 'Customer Page', products = products, customer = customer)
+
+@app.route('/alcoholpage/<int:id>')
+def alcoholpage(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    products = Product.query.filter(Product.category_id==2).all()
+    customer = Customer.query.get_or_404(id)
+    return render_template('customer/alcohol.html', title = 'Customer Page', products = products, customer = customer)
+
+@app.route('/nonalcoholpage/<int:id>')
+def nonalcoholpage(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    products = Product.query.filter(Product.category_id==3).all()
+    customer = Customer.query.get_or_404(id)
+    return render_template('customer/nonalcohol.html', title = 'Customer Page', products = products, customer = customer)
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm(request.form)
