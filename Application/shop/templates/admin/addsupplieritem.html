@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% include 'admin_navbar.html' %}
+
+<div class="container">
+    <table class="table table-sm table-condensed  table-striped">
+        <thead>
+            <th>Product ID</th>
+            <th>Product Name</th>
+            <th>Supplier Name</th>
+            <th>Supplier Price</th>
+            <th>Update</th>
+        </thead>
+        <tbody>
+            {% for product in products %} 
+            <tr>
+                <td>{{product.product_id}}</td>
+                <td>{{product.product_name}}</td>
+                <td>
+                  <form action="{{ url_for('addstock', id = supplier.supplierx)}}" method = "POST">
+                    <input type = "hidden" name="product_id" value="{{product.product_id}}"></input>
+                    <select name="supplier_name" id = "supplier_name">
+                      {% for supplier in suppliers %}
+                      <input type = "hidden" name="supplier_id" value="{{supplier.supplier_id}}"></input>
+                      <option value="{{supplier.supplier_name}}">{{supplier.supplier_name}}</option>
+                      {% endfor %}
+                    <label for="">Quantity: </label>
+                    <input type = "number" name ="quantity" value = "1" min = "1"></input>
+                    <button type = "submit" class = "btn btn-warning btn-sm">Add</button>
+                  </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
