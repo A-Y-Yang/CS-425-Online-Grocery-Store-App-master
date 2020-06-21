@@ -15,6 +15,36 @@ def customer(id):
     customer = Customer.query.get_or_404(id)
     return render_template('customer/index.html', title = 'Customer Page', products = products, customer = customer)
 
+@app.route('/food_list/<int:id>')
+def food_list(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    categories = Category.query.filter(Category.id == 1).all()
+    products = Product.query.filter(Product.category_id == 1).all()
+    customer = Customer.query.get_or_404(id)
+    return render_template('customer/index.html', title = 'Customer Page', products = products,customer = customer,categories=categories)
+
+@app.route('/alcohol_list/<int:id>')
+def alcohol_list(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    categories = Category.query.filter(Category.id == 2).all()
+    products = Product.query.filter(Product.category_id == 2).all()
+    customer = Customer.query.get_or_404(id)
+    return render_template('customer/index.html', title = 'Customer Page', products = products,customer = customer,categories=categories)
+
+@app.route('/nonalcohol_list/<int:id>')
+def nonalcohol_list(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    categories = Category.query.filter(Category.id == 3).all()
+    products = Product.query.filter(Product.category_id == 3).all()
+    customer = Customer.query.get_or_404(id)
+    return render_template('customer/index.html', title = 'Customer Page', products = products,customer = customer,categories=categories)
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm(request.form)

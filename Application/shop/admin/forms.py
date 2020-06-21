@@ -1,5 +1,6 @@
 from wtforms import Form, StringField, validators, SelectField, IntegerField, DecimalField, SelectMultipleField
 import email_validator
+from .state import state_list
 
 class RegistrationForm(Form):
     first_name = StringField('First Name', [validators.Length(min=2, max=20), validators.DataRequired()])
@@ -9,7 +10,7 @@ class RegistrationForm(Form):
     da_line_one = StringField('Line 1', [validators.Length(max=100), validators.DataRequired()])
     da_line_two = StringField('Line 2', [validators.Length(max=100)])
     da_city = StringField('City', [validators.Length(min=2, max=50), validators.DataRequired()])
-    da_state = StringField('State', [validators.Length(min=2, max=25), validators.DataRequired()])
+    da_state = SelectField('State', choices= state_list , coerce= str)
     da_zipcode = StringField('Zip Code', [validators.Length(min=5, max=5), validators.DataRequired()])
     confirm = StringField('Repeat Email for Confirmation',[validators.EqualTo('email', message='Emails must match')])
 
@@ -21,7 +22,7 @@ class StaffRegistrationForm(Form):
     a_line_one = StringField('Line 1', [validators.Length(max=100), validators.DataRequired()])
     a_line_two = StringField('Line 2', [validators.Length(max=100)])
     a_city = StringField('City', [validators.Length(min=2, max=50), validators.DataRequired()])
-    a_state = StringField('State', [validators.Length(min=2, max=25), validators.DataRequired()])
+    a_state = SelectField('State', choices= state_list , coerce= str)
     a_zipcode = StringField('Zip Code', [validators.Length(min=5, max=5), validators.DataRequired()])
     salary = IntegerField('Salary', [validators.DataRequired()])
     job_title = StringField('Job Title', [validators.Length(min=1, max=20), validators.DataRequired()])
@@ -38,7 +39,7 @@ class Addsupplier(Form):
     a_line_one = StringField('Line 1', [validators.Length(max=100), validators.DataRequired()])
     a_line_two = StringField('Line 2', [validators.Length(max=100)])
     a_city = StringField('City', [validators.Length(min=2, max=50), validators.DataRequired()])
-    a_state = StringField('State', [validators.Length(min=2, max=25), validators.DataRequired()])
+    a_state = SelectField('State', choices= state_list , coerce= str)
     a_zipcode = StringField('Zip Code', [validators.Length(min=5, max=5), validators.DataRequired()])
 
 class Addwarehouse(Form):
@@ -46,53 +47,6 @@ class Addwarehouse(Form):
     a_line_one = StringField('Line 1', [validators.Length(max=100), validators.DataRequired()])
     a_line_two = StringField('Line 2', [validators.Length(max=100), validators.DataRequired()])
     a_city = StringField('City', [validators.Length(min=2, max=50), validators.DataRequired()])
-    a_state = StringField('State', [validators.Length(min=2, max=25), validators.DataRequired()])
+    a_state = SelectField('State', choices= state_list , coerce= str)
     a_zipcode = StringField('Zip Code', [validators.Length(min=5, max=5), validators.DataRequired()])
     capacity =  DecimalField('Capacity (in cubic feet)', [validators.Length(max=12), validators.DataRequired()], places = 5)
-
-class Addsupplier_product(Form):
-    name = StringField('Supplier Name', [validators.Length(min=2, max=20), validators.DataRequired()])
-    phone = StringField('Phone Number', [validators.Length(min=10, max=10), validators.DataRequired()])
-    email = StringField('Email Address', [validators.Length(min=6, max=50), validators.DataRequired(), validators.Email()])
-    a_line_one = StringField('Line 1', [validators.Length(max=100), validators.DataRequired()])
-    a_line_two = StringField('Line 2', [validators.Length(max=100)])
-    a_city = StringField('City', [validators.Length(min=2, max=50), validators.DataRequired()])
-    a_state = StringField('State', [validators.Length(min=2, max=25), validators.DataRequired()])
-    a_zipcode = StringField('Zip Code', [validators.Length(min=5, max=5), validators.DataRequired()])
-    product_supplies = SelectField('Product in Supply', coerce=int)
-    product_supplier_price = DecimalField('Supplier Price', places = 2)
-
-class Addwarehouse_product(Form):
-    name = StringField('Warehouse Name', [validators.Length(min=2, max=20), validators.DataRequired()])
-    a_line_one = StringField('Line 1', [validators.Length(max=100), validators.DataRequired()])
-    a_line_two = StringField('Line 2', [validators.Length(max=100), validators.DataRequired()])
-    a_city = StringField('City', [validators.Length(min=2, max=50), validators.DataRequired()])
-    a_state = StringField('State', [validators.Length(min=2, max=25), validators.DataRequired()])
-    a_zipcode = StringField('Zip Code', [validators.Length(min=5, max=5), validators.DataRequired()])
-    capacity =  DecimalField('Capacity (in cubic feet)', [validators.Length(max=12), validators.DataRequired()], places = 5)
-    product_in_stock = SelectMultipleField('Product in Stock')
-    product_in_stock_quantity = IntegerField('Quantity')
-
-class Addsupplieritem(Form):
-    supplier_item_1 = SelectField('Product in Supply', coerce=int)
-    supplier_item_1_price = DecimalField('Supplier Price', places = 2)
-    supplier_item_2 = SelectField('Product in Supply', coerce=int)
-    supplier_item_2_price = DecimalField('Supplier Price', places = 2)
-    supplier_item_3 = SelectField('Product in Supply', coerce=int)
-    supplier_item_3_price = DecimalField('Supplier Price', places = 2)
-    supplier_item_4 = SelectField('Product in Supply', coerce=int)
-    supplier_item_4_price = DecimalField('Supplier Price', places = 2)
-    supplier_item_5 = SelectField('Product in Supply', coerce=int)
-    supplier_item_5_price = DecimalField('Supplier Price', places = 2)
-
-class Addstock(Form):
-    stock_item_1 = SelectField('Product 1', coerce=int)
-    stock_item_1_price = IntegerField('Quantity')
-    stock_item_2 = SelectField('Product 2', coerce=int)
-    stock_item_2_price = IntegerField('Quantity')
-    stock_item_3 = SelectField('Product 3', coerce=int)
-    stock_item_3_price = IntegerField('Quantity')
-    stock_item_4 = SelectField('Product 4', coerce=int)
-    stock_item_4_price = IntegerField('Quantity')
-    stock_item_5 = SelectField('Product 5', coerce=int)
-    stock_item_5_price = IntegerField('Quantity')

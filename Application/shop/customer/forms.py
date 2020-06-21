@@ -1,5 +1,6 @@
 from wtforms import Form, IntegerField, StringField, validators, SelectField, RadioField 
 from shop import db
+from shop.admin.state import state_list
 import json
 
 class AddcardForm(Form):
@@ -10,7 +11,7 @@ class AddcardForm(Form):
     CBA_line_one = StringField('Line 1', [validators.Length(max=100), validators.DataRequired()])
     CBA_line_two = StringField('Line 2', [validators.Length(max=100), validators.DataRequired()])
     CBA_city =  StringField('City', [validators.Length(min=2, max=50), validators.DataRequired()])
-    CBA_state = StringField('State', [validators.Length(min=2, max=25), validators.DataRequired()])
+    CBA_state = SelectField('State', choices= state_list , coerce= str)
     CBA_zipcode = StringField('Zip Code (5-digit)', [validators.Length(min=5, max=5), validators.DataRequired()])
 
 class JsonEncodedDict(db.TypeDecorator):

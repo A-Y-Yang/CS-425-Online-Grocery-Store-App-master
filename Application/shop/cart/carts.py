@@ -48,7 +48,8 @@ def getCart(id):
         return redirect(url_for('customer'))
     grandtotal = 0
     for key, product in session['Shoppingcart'].items():
-        grandtotal += round(float(product['price'])*int(product['quantity']),2)
+        grandtotal += float(product['price'])*int(product['quantity'])
+        grandtotal = float("{:.2f}".format(grandtotal))
     return render_template('product/cart.html', grandtotal = grandtotal, customer = customer, form = form, creditcards = creditcards)
 
 @app.route('/updatecart/<int:code>', methods = ['POST'])

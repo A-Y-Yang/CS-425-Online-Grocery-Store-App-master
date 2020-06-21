@@ -9,7 +9,7 @@
             <th>Product ID</th>
             <th>Product Name</th>
             <th>Supplier Name</th>
-            <th>Supplier Price</th>
+            <th>New Price ($)</th>
             <th>Update</th>
         </thead>
         <tbody>
@@ -17,17 +17,17 @@
             <tr>
                 <td>{{product.product_id}}</td>
                 <td>{{product.product_name}}</td>
-                <td>
-                  <form action="{{ url_for('addstock', id = supplier.supplierx)}}" method = "POST">
+                <form action="{{ url_for('supplierprice')}}" method = "POST">
+                  <td>
                     <input type = "hidden" name="product_id" value="{{product.product_id}}"></input>
-                    <select name="supplier_name" id = "supplier_name">
+                    <select name="supplier_id" id = "supplier_id">
                       {% for supplier in suppliers %}
-                      <input type = "hidden" name="supplier_id" value="{{supplier.supplier_id}}"></input>
-                      <option value="{{supplier.supplier_name}}">{{supplier.supplier_name}}</option>
+                      <option value="{{supplier.supplier_id}}">{{supplier.name}}</option>
                       {% endfor %}
-                    <label for="">Quantity: </label>
-                    <input type = "number" name ="quantity" value = "1" min = "1"></input>
-                    <button type = "submit" class = "btn btn-warning btn-sm">Add</button>
+                    </select>
+                  </td>
+                  <td><input type = "text" name ="newprice" placeholder="xxxxx.xx"></input></td>
+                  <td><button type = "submit" class = "btn btn-warning btn-sm">Update</button></td>
                   </form>
                 </td>
             </tr>
