@@ -128,8 +128,8 @@ class Warehouse(db.Model):
 
 class SupplierItem(db.Model):
     __tablename__ = 'supplier_item'
-    supplier_id = db.Column(db.Integer, db.ForeignKey('supplier.supplier_id'), primary_key = True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'), primary_key = True)
+    supplier_id = db.Column(db.Integer, db.ForeignKey('supplier.supplier_id', ondelete='CASCADE'), primary_key = True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id', ondelete='CASCADE'), primary_key = True)
     supplier_price = db.Column(db.Numeric(9,2),  nullable = False)
     __table_args__ = (CheckConstraint('supplier_price > 0'),)
 
@@ -217,12 +217,6 @@ class Order_item_warehouse_id(db.Model):
     order_id = db.Column(db.Integer,db.ForeignKey('orders.order_id', ondelete='CASCADE'), primary_key = True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'), primary_key = True)
     warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.warehouse_id'), primary_key = True)
-
-class Supplies(db.Model):
-    __tablename__ = 'supplies'
-    supplier_id = db.Column(db.Integer, db.ForeignKey('supplier.supplier_id', ondelete='CASCADE'), primary_key = True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id', ondelete='CASCADE'), primary_key = True)
-    supplier_price = db.Column(db.Numeric(9,2), nullable = False)
 
 class Stores(db.Model):
     __tablename__ = 'stores'

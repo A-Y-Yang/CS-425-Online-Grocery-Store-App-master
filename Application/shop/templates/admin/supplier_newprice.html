@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% include 'admin_navbar.html' %}
+
+<div class="container">
+    <table class="table table-sm table-condensed  table-striped">
+        <thead>
+            <th>Product ID</th>
+            <th>Product Name</th>
+            <th>Supplier Name</th>
+            <th>New Price ($)</th>
+            <th>Update</th>
+        </thead>
+        <tbody>
+            {% for product in products %} 
+            <tr>
+                <td>{{product.product_id}}</td>
+                <td>{{product.product_name}}</td>
+                <form action="{{ url_for('supplierprice')}}" method = "POST">
+                  <td>
+                    <input type = "hidden" name="product_id" value="{{product.product_id}}"></input>
+                    <select name="supplier_id" id = "supplier_id">
+                      {% for supplier in suppliers %}
+                      <option value="{{supplier.supplier_id}}">{{supplier.name}}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td><input type = "text" name ="newprice" placeholder="xxxxx.xx"></input></td>
+                  <td><button type = "submit" class = "btn btn-warning btn-sm">Update</button></td>
+                  </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
