@@ -72,3 +72,27 @@ class Addwarehouse_product(Form):
     capacity =  DecimalField('Capacity (in cubic feet)', [validators.Length(max=12), validators.DataRequired()], places = 5)
     product_in_stock = SelectMultipleField('Product in Stock')
     product_in_stock_quantity = IntegerField('Quantity')
+
+class Addsupplieritem(Form):
+    supplier_item_1 = SelectField('Product in Supply', coerce=int)
+    supplier_item_1_price = DecimalField('Supplier Price', places = 2)
+    supplier_item_2 = SelectField('Product in Supply', coerce=int)
+    supplier_item_2_price = DecimalField('Supplier Price', places = 2)
+    supplier_item_3 = SelectField('Product in Supply', coerce=int)
+    supplier_item_3_price = DecimalField('Supplier Price', places = 2)
+    supplier_item_4 = SelectField('Product in Supply', coerce=int)
+    supplier_item_4_price = DecimalField('Supplier Price', places = 2)
+    supplier_item_5 = SelectField('Product in Supply', coerce=int)
+    supplier_item_5_price = DecimalField('Supplier Price', places = 2)
+
+class Addstock(Form):
+    stock_item_1 = SelectField('Product 1', coerce=int)
+    stock_item_1_price = IntegerField('Quantity')
+    stock_item_2 = SelectField('Product 2', coerce=int)
+    stock_item_2_price = IntegerField('Quantity')
+    stock_item_3 = SelectField('Product 3', coerce=int)
+    stock_item_3_price = IntegerField('Quantity')
+    stock_item_4 = SelectField('Product 4', coerce=int)
+    stock_item_4_price = IntegerField('Quantity')
+    stock_item_5 = SelectField('Product 5', coerce=int)
+    stock_item_5_price = IntegerField('Quantity')

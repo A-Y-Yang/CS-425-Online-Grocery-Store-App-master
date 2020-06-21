@@ -2,7 +2,7 @@ from flask import render_template, session, request, redirect, url_for, flash
 from flask_login import login_required, logout_user, current_user
 from shop import app, db, login_manager
 from .forms import RegistrationForm, LoginForm, StaffRegistrationForm, Addsupplier, Addwarehouse, Addsupplier_product, Addwarehouse_product
-from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders, Supplies, CreditCard
+from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders, Supplies, CreditCard, AddStock
 import os
 
 @app.route('/')
@@ -250,3 +250,23 @@ def deletewarehouse(warehouse_id):
     flash(f'Cannot delete the warehouse.','danger')
     return render_template(url_for('admin'))
 
+@app.route('/addstock', methods = ['GET', 'POST'])
+def addstock():
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    #staff = Staff.query.get_or_404(id)
+    warehouses = Warehouse.query.all()
+    products = Product.query.all()
+    if request.method == "POST":
+        stock = request.form.get('product_id')
+        quantity = request.form.get('quantity')
+        size = Product.query(size).filter_by(product_id = stock)
+        product_name = Product.query(product_name).filter_by(product_id = stock)
+        addstock = AddStock(staff_id = request.form.get('staff_id'), product_id = request.form.get('product_id'),
+                            warehouse_id = request.form.get('warehouse_id'), add_quantity = quantity,
+                            add_size = int(quantity)*float(size))
+        db.session.add(addstock)
+        db.session.commit()
+        flash(f'New stock {product_name} is added.', 'success')
+    return render_template('admin/addstock.html', title = "Add Stock Page", warehouses = warehouses, products = products)

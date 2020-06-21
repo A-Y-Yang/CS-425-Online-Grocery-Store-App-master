@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% include 'admin_navbar.html' %}
+
+<div class="container">
+    <table class="table table-sm table-condensed  table-striped">
+        <thead>
+            <th>Product ID</th>
+            <th>Product Name</th>
+            <th>Warehouse Name</th>
+            <th>Quantity</th>
+            <th>Update</th>
+        </thead>
+        <tbody>
+            {% for product in products %} 
+            <tr>
+                <td>{{product.product_id}}</td>
+                <td>{{product.product_name}}</td>
+                <form action="" method = "POST">
+                  <td>
+                    <input type = "hidden" id="staff_id" name="staff_id" value="123"></input>
+                    <input type = "hidden" id="product_id" name="product_id" value="{{ product.product_id }}"></input>
+                    <div class="dropdown">
+                      <button class="btn btn-secondary btn-sm dropdown-toggle" id="dropdown1" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Select a warehouse
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="dropdown1">
+                        {% for warehouse in warehouses %}
+                            <li><a value="{{warehouse.warehouse_id}}">{{warehouse.warehouse_id}}</a></li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </td>
+                  <td>
+                    <input type = "number" name ="quantity" value = "1" min = "1"></input>
+                  </td>
+                  <td>
+                    <button type = "submit" class = "btn btn-warning btn-sm">Add to Warehouse</button>
+                  </td>
+                </form>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
