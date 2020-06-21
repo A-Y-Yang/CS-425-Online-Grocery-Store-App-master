@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% include 'admin_navbar.html' %}
+
+<div class="container">
+    <table class="table table-sm table-condensed  table-striped">
+        <thead>
+            <th>Supplier ID</th>
+            <th>Supplier Name</th>
+            <th>Details</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </thead>
+        <tbody>
+            {% for supplier in suppliers %}
+            <tr>
+                <td>{{supplier.supplier_id}}</td>
+                <td>{{supplier.name}}</td>
+                <td>
+                  <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#exampleModalLong-{{supplier.supplier_id}}">Details</button>
+                </td>
+                <td><a href="{{ url_for('updatesupplier', supplier_id=supplier.supplier_id)}}" class = "btn btn-sm btn-outline-info"> Edit </a></td>
+                <td>
+                  <button type = "button" class = "btn btn-danger btn-sm" data-toggle = "modal" data-target="#exampleModal-{{supplier.supplier_id}}"> Delete </button>
+                </td>
+            </tr>
+            <!-- Long modal -->
+
+            <div class="modal fade" id = "exampleModalLong-{{supplier.supplier_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLong" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLong-{{supplier.supplier_id}}">Supplier Details</h5> 
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="container mt-6">
+                      <div class="row">
+                          <div class="col-md-5">
+                              <h4> {{ supplier.name}} </h4>
+                              <hr>
+                              <p> Address </p>
+                              <p> {{ supplier.a_line_one }} </p>
+                              <p> {{ supplier.a_line_two }} </p>
+                              <p> {{ supplier.a_city }}, {{ supplier.a_state }} {{ supplier.a_state }} </p>
+                              <p> Phone: {{ supplier.phone }} </p>
+                              <b> Email: {{ supplier.email }} </b>
+                          </div>
+                      </div>
+                  </div> 
+                  </div>
+                  <div class="modal-footer">
+                    <form action="{{ url_for('updatesupplier', supplier_id=supplier.supplier_id)}}" method = "POST">
+                      <input type = "hidden" name="supplier" value="{{ supplier.supplier_id }}"></input>
+                      <button type = "submit" class = "btn btn-outline-info">Update Supplier</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div> 
+                </div>
+              </div>
+            </div>
+            <!--Modal-->
+            <div class="modal fade" id="exampleModal-{{supplier.supplier_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{{supplier.name}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <p class="text"> Are you sure that you want to delete the supplier ({{supplier.name}})? </p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <form action="{{url_for('deletesupplier',supplier_id=supplier.supplier_id)}}" method = "POST">
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}
