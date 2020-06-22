@@ -6,6 +6,7 @@ from shop.customer.forms import Checkout
 from .forms import Addproduct
 from decimal import Decimal
 import os
+from shop.admin.models import Staff
 
 @app.route('/addcategory', methods=['GET', 'POST'])
 def addcategory():
@@ -110,6 +111,7 @@ def deleteproduct(id, product_id):
         print(e)
         flash(f'Cannot delete the product.','danger')
         return redirect(url_for('admin', id = id))
+
 
 @app.route('/product_details/<int:id>', methods=['GET', 'POST'])
 def product_details(id):

@@ -18,7 +18,8 @@ def admin(id):
         return redirect(url_for('home'))
     staff = Staff.query.get_or_404(id)
     products = Product.query.order_by(Product.product_name.asc()).all()
-    return render_template('admin/index.html', title = 'Admin Page', staff = staff, products = products)
+    staff = Staff.query.get_or_404(id)
+    return render_template('admin/index.html', title = 'Admin Page', products = products, staff = staff)
 
 @app.route('/staff_register', methods=['GET', 'POST'])
 def staff_register():
@@ -60,7 +61,7 @@ def customer_list(id):
         return redirect(url_for('home'))
     staff = Staff.query.get_or_404(id)
     customers = Customer.query.all()
-    return render_template('admin/customer_list.html', title = 'Customer List Page', staff = staff, customers = customers)
+    return render_template('admin/customer_list.html', title = 'Customer List Page', customers = customers, staff = staff)
 
 @app.route('/deletecustomer/<int:id>/<int:customer_id>', methods=['POST'])
 def deletecustomer(id, customer_id):
@@ -127,7 +128,7 @@ def suppliers(id):
         return redirect(url_for('home'))
     staff = Staff.query.get_or_404(id)
     suppliers = Supplier.query.all()
-    return render_template('admin/supplier.html', title = 'Supplier Page', staff = staff, suppliers = suppliers)
+    return render_template('admin/supplier.html', title = 'Supplier Page', suppliers = suppliers, staff = staff)
 
 @app.route('/addsupplier/<int:id>', methods=['GET', 'POST'])
 def addsupplier(id):
@@ -148,7 +149,7 @@ def addsupplier(id):
     except Exception as e:
         print(e)
         flash(f'Fails to add supplier', 'danger')
-    return render_template('admin/addsupplier.html', title = "Add Supplier Page", staff = staff, form = form)
+    eturn render_template('admin/addsupplier.html', title = "Add Supplier Page", form = form, staff = staff)
 
 @app.route('/supplier_details/<int:id>/<int:supplier_id>', methods=['GET', 'POST'])
 def supplier_details(id, supplier_id):
@@ -218,7 +219,7 @@ def warehouses(id):
         return redirect(url_for('home'))
     staff = Staff.query.get_or_404(id)
     warehouses = Warehouse.query.all()
-    return render_template('admin/warehouse.html', title = 'Warehouse Page', staff = staff, warehouses = warehouses)
+    return render_template('admin/warehouse.html', title = 'Warehouse Page', warehouses = warehouses, staff = staff)
 
 @app.route('/addwarehouse/<int:id>', methods=['GET', 'POST'])
 def addwarehouse(id):
@@ -240,7 +241,7 @@ def addwarehouse(id):
     except Exception as e:
         print(e)
         flash(f'Fails to add warehouse', 'danger')
-    return render_template('admin/addwarehouse.html', title = "Add Warehouse Page", staff = staff, form = form)
+    return render_template('admin/addwarehouse.html', title = "Add Warehouse Page", form = form, staff = staff)
 
 @app.route('/warehouse_details/<int:id>/<int:warehouse_id>', methods=['GET', 'POST'])
 def warehouse_details(id, warehouse_id):
@@ -250,6 +251,7 @@ def warehouse_details(id, warehouse_id):
     staff = Staff.query.get_or_404(id)
     warehouse = Warehouse.query.get_or_404(id)
     return render_template('warehouse/warehouse_details.html', staff = staff, warehouse = warehouse)
+
 
 @app.route('/updatewarehouse/<int:id>/<int:warehouse_id>', methods=['GET', 'POST'])
 def updatewarehouse(id, warehouse_id):
@@ -298,15 +300,15 @@ def deletewarehouse(id, warehouse_id):
     except Exception as e:
         print(e)
         flash(f'Cannot delete the warehouse.','danger')
-    return render_template(url_for('warehouses', id = id))
+    return render_template('admin/warehouse.html', title = 'Warehouse Page', warehouses = warehouses, staff = staff)
 
 @app.route('/addstock/<int:id>', methods = ['GET', 'POST'])
 def addstock(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
-    try:
-        staff = Staff.query.get_or_404(id)
+    staff = Staff.query.get_or_404(id)
+    try: 
         warehouses = Warehouse.query.all()
         products = Product.query.all()
         if request.method == "POST":

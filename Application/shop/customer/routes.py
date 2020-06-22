@@ -90,6 +90,33 @@ def customer_login():
             flash(f'Wrong email. Please try again.', 'danger')
     return render_template('customer/login.html', title = 'Customer Login Page', form=form)
 
+@app.route('/foodpage/<int:id>')
+def foodpage(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    products = Product.query.filter(Product.category_id==1).all()
+    customer = Customer.query.get_or_404(id)
+    return render_template('customer/index.html', title = 'Customer Page', products = products, customer = customer)
+
+@app.route('/alcoholpage/<int:id>')
+def alcoholpage(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    products = Product.query.filter(Product.category_id==2).all()
+    customer = Customer.query.get_or_404(id)
+    return render_template('customer/index.html', title = 'Customer Page', products = products, customer = customer)
+
+@app.route('/nonalcoholpage/<int:id>')
+def nonalcoholpage(id):
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    products = Product.query.filter(Product.category_id==3).all()
+    customer = Customer.query.get_or_404(id)
+    return render_template('customer/index.html', title = 'Customer Page', products = products, customer = customer)
+
 @app.route('/profile/<int:id>', methods=['GET', 'POST'])
 def profile(id):
     if 'email' not in session:
@@ -107,15 +134,6 @@ def profile(id):
         db.session.commit()
         flash(f'Your profile has been updated.', 'success')
         return redirect({{url_for('customer', id = customer.customer_id)}})
-    form.first_name.data = customer.first_name
-    form.last_name.data = customer.last_name
-    form.phone.data = customer.phone
-    form.email.data = customer.email
-    form.da_line_one.data = customer.da_line_one
-    form.da_line_two.data = customer.da_line_two
-    form.da_city.data = customer.da_city
-    form.da_state.data = customer.da_state
-    form.da_zipcode.data = customer.da_zipcode
     return render_template('customer/profile.html', title = "Profile Page", form = form, customer = customer)
 
 @app.route('/orders/<int:id>', methods = ['GET'])
