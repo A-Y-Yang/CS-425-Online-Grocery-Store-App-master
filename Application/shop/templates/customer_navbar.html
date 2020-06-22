@@ -25,10 +25,10 @@
               </div>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-target="#dropdown-target" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-target="#dropdown-target-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Profile
               </a>
-              <div id="dropdown-target" class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <div id="dropdown-target-1" class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="{{ url_for('profile', id = customer.customer_id)}}">Your Profile</a>
                 <a class="dropdown-item" href="{{url_for('order_history', id = customer.customer_id)}}">Your Orders</a>
               </div>

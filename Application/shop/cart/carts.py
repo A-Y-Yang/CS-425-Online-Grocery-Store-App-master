@@ -19,7 +19,6 @@ def addcart():
         if product_id and quantity and request.method == "POST":
             DictItems = {product_id: {'name': product.product_name, 'price': float(product.price), 'quantity': quantity, 'image': product.image}}
             if 'Shoppingcart' in session:
-                print(session['Shoppingcart'])
                 if product_id in session['Shoppingcart']:
                     for key, item in session['Shoppingcart']:
                         if int(key) == int(product_id):
@@ -45,15 +44,15 @@ def getCart(id):
     form.payment_card_number.choices = [(c.card_number, c.card_number) for c in creditcards]
     if 'Shoppingcart' not in session or len(session['Shoppingcart']) <=0:
         flash(f'Cart is empty. Please add item(s).', 'danger')
-        return redirect(url_for('customer'))
+        return redirect(url_for('customer', id = id))
     grandtotal = 0
     for key, product in session['Shoppingcart'].items():
         grandtotal += float(product['price'])*int(product['quantity'])
         grandtotal = float("{:.2f}".format(grandtotal))
     return render_template('product/cart.html', grandtotal = grandtotal, customer = customer, form = form, creditcards = creditcards)
 
-@app.route('/updatecart/<int:code>', methods = ['POST'])
-def updateCart(code):
+@app.route('/updatecart/<int:id>/<int:code>', methods = ['POST'])
+def updateCart(id, code):
     if 'Shoppingcart' not in session and len(session['Shoppingcart']) <=0:
         return redirect(url_for('customer'))
     if request.method == "POST":
@@ -64,13 +63,13 @@ def updateCart(code):
                 if int(key) == code:
                     item['quantity'] = quantity
                     flash(f'Item {item.product_name} is updated.')
-                    return redirect(url_for('getCart'))
+                    return redirect(url_for('getCart', id = id))
         except Exception as e:
             print(e)
-            return redirect(url_for('getCart'))
+            return redirect(url_for('getCart', id = id))
 
-@app.route('/deleteitem/<int:id>')
-def deleteitem(id):
+@app.route('/deleteitem/<int:cus>/<int:id>/')
+def deleteitem(cus, id):
     if 'Shoppingcart' not in session and len(session['Shoppingcart']) <=0:
         return redirect(url_for('customer'))
     try:
@@ -78,17 +77,17 @@ def deleteitem(id):
         for key, item in session['Shoppingcart'].items():
             if int(key) == id:
                 session['Shoppingcart'].pop(key, None)
-                return redirect(url_for('getCart'))
+                return redirect(url_for('getCart', id = cus))
     except Exception as e:
         print(e)
-        return redirect(url_for('getCart'))
+        return redirect(url_for('getCart', id = cus))
 
-@app.route('/clearcart')
-def clearCart():
+@app.route('/clearcart/<int:id>')
+def clearCart(id):
     try:
         session.pop('Shoppingcart', None)
         flash(f'Cart is cleared.', 'danger')
-        return redirect(url_for('customer'))
+        return redirect(url_for('customer', id = id))
     except Exception as e:
         print(e)
-        return redirect(url_for('customer'))
+        return redirect(url_for('customer', id = id))

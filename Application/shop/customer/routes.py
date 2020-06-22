@@ -2,7 +2,7 @@ from flask import render_template, session, request, redirect, url_for, flash
 from flask_login import login_required, logout_user, current_user
 from shop import app, db, login_manager
 from shop.admin.forms import RegistrationForm, LoginForm
-from shop.admin.models import Customer, Product, Category, Orders, CreditCard, Owns, Product, OrderItem
+from shop.admin.models import Customer, Product, Category, Orders, CreditCard, Owns, Product, OrderItem, ProductPrice
 from .forms import AddcardForm, Checkout
 import os
 
@@ -11,39 +11,58 @@ def customer(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
-    products = Product.query.order_by(Product.product_name.desc()).all()
+    #products = Product.query.order_by(Product.product_name.desc()).all()
     customer = Customer.query.get_or_404(id)
-    return render_template('customer/index.html', title = 'Customer Page', products = products, customer = customer)
+    products_by_state = Product.query.join(ProductPrice, Product.product_id == ProductPrice.product_id)\
+                        .add_columns(Product.product_id, Product.product_name, ProductPrice.price,
+                         Product.image, Product.add_info, ProductPrice.delivery_state)\
+                        .filter(ProductPrice.delivery_state == customer.da_state).all()
+    print(products_by_state)
+    return render_template('customer/index.html', title = 'Customer Page', products = products_by_state, customer = customer)
 
 @app.route('/foodpage/<int:id>')
-def food_list(id):
+def foodpage(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     categories = Category.query.filter(Category.id == 1).all()
-    products = Product.query.filter(Product.category_id == 1).all()
     customer = Customer.query.get_or_404(id)
-    return render_template('customer/index.html', title = 'Customer Page', products = products,customer = customer,categories=categories)
+    products_by_state = Product.query.join(ProductPrice, Product.product_id == ProductPrice.product_id)\
+                        .add_columns(Product.product_id, Product.product_name, ProductPrice.price,
+                         Product.image, Product.add_info, ProductPrice.delivery_state)\
+                        .filter(ProductPrice.delivery_state == customer.da_state)\
+                        .filter(Product.category_id == 1).all()
+    return render_template('customer/index.html', title = 'Customer Page', products = products_by_state,customer = customer,categories=categories)
 
 @app.route('/alcoholpage/<int:id>')
-def alcohol_list(id):
+def alcoholpage(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     categories = Category.query.filter(Category.id == 2).all()
     products = Product.query.filter(Product.category_id == 2).all()
     customer = Customer.query.get_or_404(id)
-    return render_template('customer/index.html', title = 'Customer Page', products = products,customer = customer,categories=categories)
+    products_by_state = Product.query.join(ProductPrice, Product.product_id == ProductPrice.product_id)\
+                        .add_columns(Product.product_id, Product.product_name, ProductPrice.price,
+                         Product.image, Product.add_info, ProductPrice.delivery_state)\
+                        .filter(ProductPrice.delivery_state == customer.da_state)\
+                        .filter(Product.category_id == 2).all()
+    return render_template('customer/index.html', title = 'Customer Page', products = products_by_state ,customer = customer,categories=categories)
 
 @app.route('/nonalcoholpage/<int:id>')
-def nonalcohol_list(id):
+def nonalcoholpage(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     categories = Category.query.filter(Category.id == 3).all()
     products = Product.query.filter(Product.category_id == 3).all()
     customer = Customer.query.get_or_404(id)
-    return render_template('customer/index.html', title = 'Customer Page', products = products,customer = customer,categories=categories)
+    products_by_state = Product.query.join(ProductPrice, Product.product_id == ProductPrice.product_id)\
+                        .add_columns(Product.product_id, Product.product_name, ProductPrice.price,
+                         Product.image, Product.add_info, ProductPrice.delivery_state)\
+                        .filter(ProductPrice.delivery_state == customer.da_state)\
+                        .filter(Product.category_id == 3).all()
+    return render_template('customer/index.html', title = 'Customer Page', products = products_by_state,customer = customer,categories=categories)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

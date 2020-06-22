@@ -15,14 +15,14 @@ class Customer(db.Model):
     email = db.Column(db.String(50), unique = True, nullable = False)
     payment_total = db.Column(db.Numeric(9,2), unique = False, default = 0)
     paid_total = db.Column(db.Numeric(9,2), unique = False, default = 0)
-    balance = db.Column(db.Numeric(9,2), Computed('payment_total - paid_total'))
+    balance = db.Column(db.Numeric(9,2), Computed('paid_total - payment_total'))
     da_line_one = db.Column(db.String(100), unique = False, nullable = False)
     da_line_two = db.Column(db.String(100), unique = False, nullable = True)
     da_city = db.Column(db.String(50), unique = False, nullable = False)
     da_state = db.Column(db.String(25), unique = False, nullable = False)
     da_zipcode = db.Column(db.CHAR(5), unique = False, nullable = False)
     
-    __table_args__ = (CheckConstraint('payment_total >= 0'), CheckConstraint('paid_total >= 0'), CheckConstraint('balance >= 0'),)
+    __table_args__ = (CheckConstraint('payment_total >= 0'), CheckConstraint('paid_total >= 0'),)
 
     def __repr__(self):
         return '<Customer %r>' % self.email
@@ -147,7 +147,7 @@ class ProductPrice(db.Model):
     __tablename__ = 'product_price'
     product_id = db.Column(db.Integer, db.Sequence('product_id_sq', start = 3000001, increment = 1, minvalue = 3000001, maxvalue = 4999999), primary_key = True)
     delivery_state = db.Column(db.String(25), primary_key = True)
-    price = db.Column(db.Integer, nullable = False, unique = False)
+    price = db.Column(db.Numeric(9,2), nullable = False, unique = False)
 
 class Pricing(db.Model):
     __tablename__ = 'pricing'
