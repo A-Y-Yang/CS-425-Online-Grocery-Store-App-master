@@ -149,7 +149,7 @@ def addsupplier(id):
     except Exception as e:
         print(e)
         flash(f'Fails to add supplier', 'danger')
-    eturn render_template('admin/addsupplier.html', title = "Add Supplier Page", form = form, staff = staff)
+    return render_template('admin/addsupplier.html', title = "Add Supplier Page", form = form, staff = staff)
 
 @app.route('/supplier_details/<int:id>/<int:supplier_id>', methods=['GET', 'POST'])
 def supplier_details(id, supplier_id):

@@ -89,34 +89,7 @@ def customer_login():
         else:
             flash(f'Wrong email. Please try again.', 'danger')
     return render_template('customer/login.html', title = 'Customer Login Page', form=form)
-
-@app.route('/foodpage/<int:id>')
-def foodpage(id):
-    if 'email' not in session:
-        flash(f'Please login first','danger')
-        return redirect(url_for('home'))
-    products = Product.query.filter(Product.category_id==1).all()
-    customer = Customer.query.get_or_404(id)
-    return render_template('customer/index.html', title = 'Customer Page', products = products, customer = customer)
-
-@app.route('/alcoholpage/<int:id>')
-def alcoholpage(id):
-    if 'email' not in session:
-        flash(f'Please login first','danger')
-        return redirect(url_for('home'))
-    products = Product.query.filter(Product.category_id==2).all()
-    customer = Customer.query.get_or_404(id)
-    return render_template('customer/index.html', title = 'Customer Page', products = products, customer = customer)
-
-@app.route('/nonalcoholpage/<int:id>')
-def nonalcoholpage(id):
-    if 'email' not in session:
-        flash(f'Please login first','danger')
-        return redirect(url_for('home'))
-    products = Product.query.filter(Product.category_id==3).all()
-    customer = Customer.query.get_or_404(id)
-    return render_template('customer/index.html', title = 'Customer Page', products = products, customer = customer)
-
+    
 @app.route('/profile/<int:id>', methods=['GET', 'POST'])
 def profile(id):
     if 'email' not in session:
