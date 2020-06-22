@@ -17,7 +17,7 @@
             <tr>
                 <td>{{product.product_id}}</td>
                 <td>{{product.product_name}}</td>
-                <form action="{{ url_for('stateprice')}}" method = "POST">
+                <form action="{{ url_for('stateprice', id = staff.staff_id)}}" method = "POST">
                   <td>
                     <input type = "hidden" name="product_id" value="{{product.product_id}}"></input>
                     <select name="state" id = "state">
