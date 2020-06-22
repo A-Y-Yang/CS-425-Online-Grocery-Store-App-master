@@ -4,7 +4,10 @@ from sqlalchemy import CheckConstraint, ForeignKeyConstraint, Computed, CHAR
 
 @login_manager.user_loader
 def user_load(user_id):
-    return User.query.get(user_id)
+    if (Customer.query.get(user_id) is not None):
+        return Customer.query.get(user_id)
+    elif (Staff.query.get(user_id) is not None):
+        return Staff.query.get(user_id)
 
 class Customer(db.Model):
     __tablename__ = 'customer'
@@ -73,7 +76,7 @@ class CreditCard(db.Model):
     CBA_city = db.Column(db.String(50), unique = False, nullable = False)
     CBA_state = db.Column(db.String(25), unique = False, nullable = False)
     CBA_zipcode = db.Column(db.CHAR(5), unique = False, nullable = False)
-    __table_args__ = (CheckConstraint("card_expire_date ~ '[0][1-9][2][0-9]|[1][12][2][0-9]'", name='card_expire_date_constraint'), CheckConstraint("card_cvv ~ '[0-9]{3}'", name='cvv_constraint'),)
+    __table_args__ = (CheckConstraint("card_expire_date ~ '[0][1-9][2][0-9]|[1][012][2][0-9]'", name='card_expire_date_constraint'), CheckConstraint("card_cvv ~ '[0-9]{3}'", name='cvv_constraint'),)
 
     def __repr__(self):
         return '<CreditCard %r>' % self.card_number
@@ -89,7 +92,7 @@ class Product(db.Model):
     product_name = db.Column(db.String(30), nullable = False, unique = True)
     price = db.Column(db.Numeric(9,2), nullable = False, unique = False)
     size = db.Column(db.Numeric(12,5), nullable = False, unique = False)
-    add_info = db.Column(db.String(150), nullable = False, unique = True)
+    add_info = db.Column(db.String(300), nullable = False, unique = True)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable = False)
     category = db.relationship(Category, backref=db.backref('categories', lazy = True))
     image = db.Column(db.String(150), nullable = True)
@@ -105,7 +108,7 @@ class Orders(db.Model):
     ordering_total = db.Column(db.Numeric(9,2), nullable = True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable = False)
     status = db.Column(db.String(8), nullable = False, default = 'issued')
-    __table_args__ = (CheckConstraint('ordering_total >= 0'), CheckConstraint("status in ('pending','issued','send','received')"),)
+    __table_args__ = (CheckConstraint('ordering_total >= 0'), CheckConstraint("status in ('issued','send','received')"),)
 
     def __repr__(self):
         return '<Orders %r>' % self.order_id

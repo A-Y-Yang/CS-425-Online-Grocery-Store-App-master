@@ -11,13 +11,11 @@ def customer(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
-    #products = Product.query.order_by(Product.product_name.desc()).all()
     customer = Customer.query.get_or_404(id)
     products_by_state = Product.query.join(ProductPrice, Product.product_id == ProductPrice.product_id)\
                         .add_columns(Product.product_id, Product.product_name, ProductPrice.price,
-                         Product.image, Product.add_info, ProductPrice.delivery_state)\
+                         Product.image, Product.size, Product.add_info, ProductPrice.delivery_state)\
                         .filter(ProductPrice.delivery_state == customer.da_state).all()
-    print(products_by_state)
     return render_template('customer/index.html', title = 'Customer Page', products = products_by_state, customer = customer)
 
 @app.route('/foodpage/<int:id>')
@@ -29,7 +27,7 @@ def foodpage(id):
     customer = Customer.query.get_or_404(id)
     products_by_state = Product.query.join(ProductPrice, Product.product_id == ProductPrice.product_id)\
                         .add_columns(Product.product_id, Product.product_name, ProductPrice.price,
-                         Product.image, Product.add_info, ProductPrice.delivery_state)\
+                         Product.image, Product.size, Product.add_info, ProductPrice.delivery_state)\
                         .filter(ProductPrice.delivery_state == customer.da_state)\
                         .filter(Product.category_id == 1).all()
     return render_template('customer/index.html', title = 'Customer Page', products = products_by_state,customer = customer,categories=categories)
@@ -44,7 +42,7 @@ def alcoholpage(id):
     customer = Customer.query.get_or_404(id)
     products_by_state = Product.query.join(ProductPrice, Product.product_id == ProductPrice.product_id)\
                         .add_columns(Product.product_id, Product.product_name, ProductPrice.price,
-                         Product.image, Product.add_info, ProductPrice.delivery_state)\
+                         Product.image, Product.size, Product.add_info, ProductPrice.delivery_state)\
                         .filter(ProductPrice.delivery_state == customer.da_state)\
                         .filter(Product.category_id == 2).all()
     return render_template('customer/index.html', title = 'Customer Page', products = products_by_state ,customer = customer,categories=categories)
@@ -59,10 +57,10 @@ def nonalcoholpage(id):
     customer = Customer.query.get_or_404(id)
     products_by_state = Product.query.join(ProductPrice, Product.product_id == ProductPrice.product_id)\
                         .add_columns(Product.product_id, Product.product_name, ProductPrice.price,
-                         Product.image, Product.add_info, ProductPrice.delivery_state)\
+                         Product.image, Product.size, Product.add_info, ProductPrice.delivery_state)\
                         .filter(ProductPrice.delivery_state == customer.da_state)\
                         .filter(Product.category_id == 3).all()
-    return render_template('customer/index.html', title = 'Customer Page', products = products_by_state,customer = customer,categories=categories)
+    return render_template('customer/index.html', title = 'Customer Page', products = products_by_state, customer = customer,categories=categories)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -230,17 +228,15 @@ def deletecards(id, card_number):
         flash(f'Please login first','danger')
         return redirect(url_for('customer_login'))
     customer = Customer.query.get_or_404(id)
+    customer_cards = db.session.query(Owns.card_number).filter(Owns.customer_id == id).subquery()
+    creditcards = db.session.query(CreditCard).filter(CreditCard.card_number.in_(customer_cards))
     creditcard = CreditCard.query.get_or_404(str(card_number))
     card_owner = Owns.query.get_or_404([id,str(card_number)])
     if request.method == "POST":
-        #try:
-        #    os.unlink(os.path.join(current_app.root_path))
-        #except Exception as e:
-        #    print(e)
         db.session.delete(card_owner)
         db.session.delete(creditcard)
         db.session.commit()
         flash(f'Your credit card {creditcard.card_number} was deleted.', 'success')
         return redirect(url_for('customer', id = customer.customer_id))
     flash(f'Cannot delete the card.','danger')
-    return render_template(url_for('customer', id = customer.customer_id))
+    return render_template('customer/creditcards.html', title = 'Credit Card Page', creditcards = creditcards, customer = customer)

@@ -21,7 +21,7 @@
                 <td>{{order.status}}</td>
                 <td><a href="{{url_for('order_history_details', id = order.customer_id, order_id = order.order_id)}}" class = "btn btn-sm btn-outline-primary"> Details </a></td>
                 <td>
-                  <form action="{{url_for('order_list')}}" method = "POST">
+                  <form action="{{url_for('order_list', id = staff.staff_id)}}" method = "POST">
                     <input type = "hidden" name="order_id" value="{{order.order_id}}"></input>
                     <button type="submit" class="btn btn-sm btn-info">Received</button>
                   </form>
@@ -45,8 +45,8 @@
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <form action="" method = "POST">
-                      <button type="button" class="btn btn-danger">Delete</button>
+                    <form action="{{url_for('deleteorder', id = staff.staff_id,order_id=order.order_id)}}" method = "POST">
+                      <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                   </div>
                 </div>
