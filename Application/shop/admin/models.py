@@ -46,6 +46,7 @@ class Staff(db.Model):
     def __repr__(self):
         return '<Staff %r>' % self.email
 
+
 class Supplier(db.Model):
     __tablename__ = 'supplier'
     supplier_id = db.Column(db.Integer, db.Sequence('supplier_id_sq', start = 8000001, increment = 1, minvalue = 8000001, maxvalue = 8999999), primary_key = True)

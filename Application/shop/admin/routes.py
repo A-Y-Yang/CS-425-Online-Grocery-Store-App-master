@@ -10,13 +10,14 @@ from decimal import Decimal
 def home():
     return render_template('index.html')
 
-@app.route('/admin')
-def admin():
+@app.route('/admin/<int:id>')
+def admin(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     products = Product.query.order_by(Product.product_name.asc()).all()
-    return render_template('admin/index.html', title = 'Admin Page', products = products)
+    staff = Staff.query.get_or_404(id)
+    return render_template('admin/index.html', title = 'Admin Page', products = products, staff = staff)
 
 @app.route('/staff_register', methods=['GET', 'POST'])
 def staff_register():
@@ -41,7 +42,7 @@ def staff_login():
         if staff and staff.email == form.email.data:
             session['email'] = form.email.data
             flash(f'Welcome {form.first_name.data}. You are logged-in.', 'success')
-            return redirect(request.args.get('next') or url_for('admin'))
+            return redirect(request.args.get('next') or url_for('admin', id = staff.staff_id))
         else:
             flash(f'Wrong email. Please try again.', 'danger')
     return render_template('admin/login.html', title = 'Staff Login Page', form=form)
