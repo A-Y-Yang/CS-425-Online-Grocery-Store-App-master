@@ -19,27 +19,27 @@
               Account Managemnet
             </a>
             <div id="dropdown-target" class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="{{url_for('customer_list')}}">Customer</a>
-              <a class="dropdown-item" href="{{url_for('order_list')}}">Order</a>
+              <a class="dropdown-item" href="{{url_for('customer_list', id = staff.staff_id)}}">Customer</a>
+              <a class="dropdown-item" href="{{url_for('order_list', id = staff.staff_id)}}">Order</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="{{url_for('suppliers')}}">Supplier</a>
-              <a class="dropdown-item" href="{{url_for('warehouses')}}">Warehouse</a>
+              <a class="dropdown-item" href="{{url_for('suppliers', id = staff.staff_id)}}">Supplier</a>
+              <a class="dropdown-item" href="{{url_for('warehouses', id = staff.staff_id)}}">Warehouse</a>
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('addproduct')}}">Add Product</a>
+            <a class="nav-link" href="{{url_for('addproduct', id = staff.staff_id)}}">Add Product</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('addsupplier')}}">Add Supplier</a>
+            <a class="nav-link" href="{{url_for('addsupplier',id = staff.staff_id)}}">Add Supplier</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('addwarehouse')}}">Add Warehouse</a>
+            <a class="nav-link" href="{{url_for('addwarehouse',id = staff.staff_id)}}">Add Warehouse</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('addstock')}}">Add Stock</a>
+            <a class="nav-link" href="{{url_for('addstock',id = staff.staff_id)}}">Add Stock</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('supplierprice')}}">Supplier Price</a>
+            <a class="nav-link" href="{{url_for('supplierprice',id = staff.staff_id)}}">Supplier Price</a>
           </li>
         </ul>
       </div>
