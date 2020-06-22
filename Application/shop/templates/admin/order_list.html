@@ -21,8 +21,9 @@
                 <td>{{order.status}}</td>
                 <td><a href="{{url_for('order_history_details', id = order.customer_id, order_id = order.order_id)}}" class = "btn btn-sm btn-outline-primary"> Details </a></td>
                 <td>
-                  <form action="" class = "received" id = "{{order.order_id}}" method = "POST">
-                    <button type="button" class="btn btn-sm btn-info">Received</button>
+                  <form action="{{url_for('order_list')}}" method = "POST">
+                    <input type = "hidden" name="order_id" value="{{order.order_id}}"></input>
+                    <button type="submit" class="btn btn-sm btn-info">Received</button>
                   </form>
                 </td>
                 <td>

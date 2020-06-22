@@ -19,16 +19,16 @@
                 Category 
               </a>
               <div id="dropdown-target" class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="{{url_for('food_list', id = customer.customer_id)}}" >Food</a>
-                <a class="dropdown-item" href="{{url_for('alcohol_list', id = customer.customer_id)}}" >Alcoholic Beverage</a>
-                <a class="dropdown-item" href="{{url_for('nonalcohol_list', id = customer.customer_id)}}">Non-alcoholic Beverage</a>
+                <a class="dropdown-item" href="{{url_for('foodpage', id = customer.customer_id)}}" >Food</a>
+                <a class="dropdown-item" href="{{url_for('alcoholpage', id = customer.customer_id)}}" >Alcoholic Beverage</a>
+                <a class="dropdown-item" href="{{url_for('nonalcoholpage', id = customer.customer_id)}}">Non-alcoholic Beverage</a>
               </div>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-target="#dropdown-target" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-target="#dropdown-target-1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Profile
               </a>
-              <div id="dropdown-target" class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <div id="dropdown-target-1" class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="{{ url_for('profile', id = customer.customer_id)}}">Your Profile</a>
                 <a class="dropdown-item" href="{{url_for('order_history', id = customer.customer_id)}}">Your Orders</a>
               </div>

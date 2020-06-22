@@ -22,13 +22,13 @@
                     <td>{{ loop.index }}</td>
                     <td>{{ product.name }}</td>
                     <td>{{ product.price }}</td>
-                    <form action="{{url_for('updateCart', code = key)}}" method = "POST">
+                    <form action="{{url_for('updateCart', id = customer.customer_id, code = key)}}" method = "POST">
                         <td><input type="number" name = "quantity" min="1" value = "{{ product.quantity }}"></td>
                         {% set subtotal = product.quantity|int * product.price|float %}
                         <td>{{ subtotal }}</td>
                         <td><button class = "btn btn-sm btn-outline-info">Update</button></td>
                     </form>
-                    <td><a href="{{url_for('deleteitem', id = key)}}" class= "btn btn-sm btn-outline-danger">Delete</a></td>
+                    <td><a href="{{url_for('deleteitem', cus = customer.customer_id, id = key)}}" class= "btn btn-sm btn-outline-danger">Delete</a></td>
                 </tr>
                 {% endfor %}
                 <tr>
@@ -39,7 +39,7 @@
                     <td>
                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal" data-whatever="{{current_user.id}}">Checkout</button>
                     </td>
-                    <td><a href="{{ url_for('clearCart')}}" class = "btn btn-danger">Clear Cart</a></td>
+                    <td><a href="{{ url_for('clearCart', id = customer.customer_id)}}" class = "btn btn-danger">Clear Cart</a></td>
                 </tr>
                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">

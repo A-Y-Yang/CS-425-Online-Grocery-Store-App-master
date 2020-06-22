@@ -30,16 +30,23 @@
             <a class="nav-link" href="{{url_for('addproduct')}}">Add Product</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('addsupplier')}}">Add Supplier</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{url_for('addwarehouse')}}">Add Warehouse</a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link" href="{{url_for('addstock')}}">Add Stock</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{url_for('supplierprice')}}">Supplier Price</a>
+            <a class="nav-link" href="{{url_for('stateprice')}}">Update Price by State </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-target="#dropdown-target-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              More Links
+            </a>
+            <div id="dropdown-target-2" class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="nav-link" href="{{url_for('addsupplier')}}">Add Supplier</a>
+              <a class="nav-link" href="{{url_for('addwarehouse')}}">Add Warehouse</a>
+              <a class="nav-link" href="{{url_for('supplierprice')}}">Supplier Price</a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('logout')}}">Logout </a>
           </li>
         </ul>
       </div>

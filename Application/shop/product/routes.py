@@ -1,9 +1,10 @@
 from flask import render_template, request, redirect, url_for, flash, session, current_app
 from shop import app, db, photos, login_manager
 from flask_login import login_required, logout_user, current_user
-from shop.admin.models import Category, Product, Orders, OrderItem, Owns, Customer
+from shop.admin.models import Category, Product, Orders, OrderItem, Owns, Customer, Warehouse, Availability
 from shop.customer.forms import Checkout
 from .forms import Addproduct
+from decimal import Decimal
 import os
 
 @app.route('/addcategory', methods=['GET', 'POST'])
@@ -127,16 +128,27 @@ def addorder(id):
             orderitem = OrderItem(order_id = order.order_id, product_id = int(key),
                                 quantity = product['quantity'], unit_price = product['price'])
             db.session.add(orderitem)
-        flash(f'Your order has been issued', 'success')
+            customer = Customer.query.filter_by(customer_id = id).first()
+            warehouse = Warehouse.query.filter_by(a_state = customer.da_state).first()
+            reduceavailability = Availability.query.filter_by(product_id = int(key), warehouse_id = warehouse.warehouse_id).first()
+            if (reduceavailability.item_quantity > int(orderitem.quantity)):
+                reduceavailability.item_quantity -= int(orderitem.quantity)
+                db.session.add(orderitem)
+            else:
+                db.session.delete(order)
+                db.session.commit()
+                flash(f'{product["name"]} is not available. Please review your order.', 'danger')
+                return redirect(url_for('getCart', id = id))
         customer = Customer.query.get_or_404(id)
-        customer.payment_total += grandtotal
+        customer.payment_total += Decimal(grandtotal)
+        order.status = 'send'
         db.session.commit()
+        flash(f'Your order has been issued', 'success')
         session.pop('Shoppingcart')
         return redirect(url_for('customer', id = id))
     except Exception as e:
         print(e)
         flash('Somethings went wrong while get order','danger')
         return redirect(url_for('getCart', id = id))
-    #return redirect(url_for('customer',id = customer_id))
             
             

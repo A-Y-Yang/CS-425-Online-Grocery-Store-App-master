@@ -1,10 +1,11 @@
 from flask import render_template, session, request, redirect, url_for, flash
 from flask_login import login_required, logout_user, current_user
+from decimal import Decimal
 from shop import app, db, login_manager
 from .forms import RegistrationForm, LoginForm, StaffRegistrationForm, Addsupplier, Addwarehouse
-from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders, CreditCard, Stock, AddStock, SupplierItem
+from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders, CreditCard, Stock, AddStock, SupplierItem, ProductPrice, Availability
+from .state import state_list
 import os
-from decimal import Decimal
 
 @app.route('/')
 def home():
@@ -59,25 +60,20 @@ def customer_list():
     customers = Customer.query.all()
     return render_template('admin/customer_list.html', title = 'Customer List Page', customers = customers)
 
-@app.route('/order_list')
+@app.route('/order_list', methods = ['GET', 'POST'])
 def order_list():
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     orders = Orders.query.all()
     if request.method == 'POST':
-        order = Orders(order_id = request.form.get(id), status = request.form.get('received'))
+        updateorder = Orders.query.filter_by(order_id = request.form.get('order_id')).first()
+        updateorder.status = 'received'
+        customer = Customer.query.filter_by(customer_id = updateorder.customer_id).first()
+        customer.paid_total += updateorder.ordering_total
         db.session.commit()
         flash(f'The order status is changed to "received".', 'success')
     return render_template('admin/order_list.html', title = 'Order List Page', orders = orders)
-
-#@app.route('/creditcards/')
-#def creditcards():
-#    if 'email' not in session:
-#        flash(f'Please login first','danger')
-#        return redirect(url_for('home'))
-#    creditcards = CreditCard.query.all()
-#    return render_template('admin/creditcards.html', title = 'Credit Card Page', creditcards = creditcards)
 
 @app.route('/suppliers')
 def suppliers():
@@ -218,7 +214,6 @@ def deletewarehouse(warehouse_id):
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     warehouse = Warehouse.query.get_or_404(warehouse_id)
-    print(warehouse)
     if request.method == "POST":
         db.session.delete(warehouse)
         db.session.commit()
@@ -233,40 +228,51 @@ def addstock():
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     #staff = Staff.query.get_or_404(id)
-    warehouses = Warehouse.query.all()
-    products = Product.query.all()
-    if request.method == "POST":
-        stock = request.form.get('product_id')
-        quantity = request.form.get('quantity')
-        product = Product.query.filter_by(product_id = stock).first()
-        addstock = AddStock(staff_id = request.form.get('staff_id'), product_id = request.form.get('product_id'),
-                            warehouse_id = request.form.get('warehouse_id'), add_quantity = quantity,
-                            add_size = int(quantity)*float(product.size))
-        if (Stock.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id).first() is None):
-            newstock = Stock(product_id = addstock.product_id, warehouse_id = addstock.warehouse_id, 
-                            item_quantity = quantity, size_total = int(quantity)*float(product.size))
-            db.session.add(newstock)
-            db.session.add(addstock)
-            updatewh = Warehouse.query.get_or_404(addstock.warehouse_id)
-            updatewh.capacity_used += Decimal(addstock.add_size)
-            db.session.commit()
-            flash(f'New item {product.product_name} is added into Stock.', 'success')
-        elif (AddStock.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id).first() is None):
-            db.session.add(addstock)
-            updatestock = Stock.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id)
-            updatestock.item_quantity += addstock.add_quantity
-            updatewh = Warehouse.query.get_or_404(addstock.warehouse_id)
-            updatewh.capacity_used += Decimal(addstock.add_size)
-            db.session.commit()
-            flash(f'New stock of {product.product_name} is added.', 'success')
-        else:
-            updatestock = Stock(product_id = request.form.get('product_id'), warehouse_id = request.form.get('warehouse_id'))
-            updatestock.item_quantity += addstock.add_quantity
-            updatestock.size_total += addstock.add_size
-            updatewh = Warehouse.query.get_or_404(addstock.warehouse_id)
-            updatewh.capacity_used += Decimal(addstock.add_size)
-            db.session.commit()
-            flash(f'More stock {product.product_name} is added.', 'success')
+    try: 
+        warehouses = Warehouse.query.all()
+        products = Product.query.all()
+        if request.method == "POST":
+            stock = request.form.get('product_id')
+            quantity = request.form.get('quantity')
+            product = Product.query.filter_by(product_id = stock).first()
+            addstock = AddStock(staff_id = request.form.get('staff_id'), product_id = request.form.get('product_id'),
+                                warehouse_id = request.form.get('warehouse_id'), add_quantity = quantity,
+                                add_size = int(quantity)*float(product.size))
+            if (Stock.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id).first() is None):
+                newstock = Stock(product_id = addstock.product_id, warehouse_id = addstock.warehouse_id, 
+                                item_quantity = quantity, size_total = int(quantity)*float(product.size))
+                db.session.add(newstock)
+                db.session.add(addstock)
+                updatewh = Warehouse.query.get_or_404(addstock.warehouse_id)
+                updatewh.capacity_used += Decimal(addstock.add_size)
+                updateavail = Availability.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id)
+                updateavail.item_quantity += int(quantity)
+                db.session.commit()
+                flash(f'New item {product.product_name} is added into Stock.', 'success')
+            elif (AddStock.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id).first() is None):
+                db.session.add(addstock)
+                updatestock = Stock.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id).first()
+                updatestock.item_quantity += int(addstock.add_quantity)
+                updatewh = Warehouse.query.get_or_404(addstock.warehouse_id)
+                updatewh.capacity_used += Decimal(addstock.add_size)
+                updateavail = Availability.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id)
+                updateavail.item_quantity += int(quantity)
+                db.session.commit()
+                flash(f'New stock of {product.product_name} is added.', 'success')
+            else:
+                updatestock = Stock.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id).first()
+                updatestock.item_quantity += int(addstock.add_quantity)
+                updatestock.size_total += Decimal(addstock.add_size)
+                updatewh = Warehouse.query.get_or_404(addstock.warehouse_id)
+                updatewh.capacity_used += Decimal(addstock.add_size)
+                updateavail = Availability.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id)
+                updateavail.item_quantity += int(quantity)
+                db.session.commit()
+                flash(f'More stock {product.product_name} is added.', 'success')
+    except Exception as e:
+        print(e)
+        flash(f'Somethings went wrong while get order','danger')
+        return redirect(url_for('addstock'))
     return render_template('admin/addstock.html', title = "Add Stock Page", warehouses = warehouses, products = products)
 
 @app.route('/supplierprice', methods = ['GET', 'POST'])
@@ -283,6 +289,36 @@ def supplierprice():
             db.session.add(newprice)
             db.session.commit()
         else:
+            updateprice = SupplierItem.query.filter_by(supplier_id = newprice.supplier_id).filter_by(product_id = newprice.product_id).first()
+            updateprice.supplier_price = newprice.supplier_price
             db.session.commit()
         flash(f'New price is updated.', 'success')
     return render_template('admin/supplier_newprice.html', title = "Supplier Price Page", suppliers = suppliers, products = products)
+
+
+@app.route('/pricebystate', methods = ['GET', 'POST'])
+def stateprice():
+    if 'email' not in session:
+        flash(f'Please login first','danger')
+        return redirect(url_for('home'))
+    products = Product.query.all()
+    states = state_list
+    if request.method == "POST":
+        stateprice = ProductPrice(product_id = request.form.get('product_id'),delivery_state = request.form.get('state'),
+                                price = request.form.get('newprice'))
+        if (stateprice.price == '0'):
+            if (ProductPrice.query.filter_by(product_id = stateprice.product_id).filter_by(delivery_state = stateprice.delivery_state).first() is not None):
+                deleteprice = ProductPrice.query.filter_by(product_id = stateprice.product_id).filter_by(delivery_state = stateprice.delivery_state).first()
+                db.session.delete(deleteprice)
+                db.session.commit()
+                flash(f'This price record is deleted.', 'success')
+            return render_template('admin/stateprice.html', title = "State Price Page", states = states, products = products)
+        elif (ProductPrice.query.filter_by(product_id = stateprice.product_id).filter_by(delivery_state = stateprice.delivery_state).first() is None):
+            db.session.add(stateprice)
+            db.session.commit()
+        else:
+            updateprice = ProductPrice.query.filter_by(product_id = stateprice.product_id).filter_by(delivery_state = stateprice.delivery_state).first()
+            updateprice.price = stateprice.price
+            db.session.commit()
+        flash(f'New price is updated.', 'success')
+    return render_template('admin/stateprice.html', title = "State Price Page", states = states, products = products)
