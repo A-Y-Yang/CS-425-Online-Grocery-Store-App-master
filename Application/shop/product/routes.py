@@ -5,6 +5,7 @@ from shop.admin.models import Category, Product, Orders, OrderItem, Owns, Custom
 from shop.customer.forms import Checkout
 from .forms import Addproduct
 import os
+from shop.admin.models import Staff
 
 @app.route('/addcategory', methods=['GET', 'POST'])
 def addcategory():
@@ -33,11 +34,12 @@ def updatecat(id):
         return redirect(url_for('categories'))
     return render_template('product/updatecat.html', title = "Update Category Page", updatecat = updatecat)
 
-@app.route('/addproduct', methods=['GET', 'POST'])
-def addproduct():
+@app.route('/addproduct/<int:id>', methods=['GET', 'POST'])
+def addproduct(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('login'))
+    staff = Staff.query.get_or_404(id)
     categories = Category.query.all()
     form = Addproduct(request.form)
     if request.method == 'POST':
@@ -48,15 +50,16 @@ def addproduct():
         db.session.add(product)
         db.session.commit()
         flash(f'{form.product_name.data} is added to your database.', 'success')
-        return redirect(url_for('admin'))
-    return render_template('product/addproduct.html', title = "Add Product Page", form = form, categories = categories)
+        return redirect(url_for('admin', id = staff.staff_id))
+    return render_template('product/addproduct.html', title = "Add Product Page", form = form, categories = categories, staff = staff)
 
-@app.route('/updateproduct/<int:id>', methods=['GET', 'POST'])
-def updateproduct(id):
+@app.route('/updateproduct/<int:id>/<int:staff_id>', methods=['GET', 'POST'])
+def updateproduct(id, staff_id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('customer_login'))
     categories = Category.query.all()
+    staff = Staff.query.get_or_404(staff_id)
     product = Product.query.get_or_404(id)
     form = Addproduct(request.form)
     category = request.form.get('category')
@@ -68,20 +71,21 @@ def updateproduct(id):
         product.category_id = category
         db.session.commit()
         flash(f'Your product {form.product_name.data} has been updated.', 'success')
-        return redirect(url_for('admin'))
+        return redirect(url_for('admin', id = staff.staff_id))
     form.product_name.data = product.product_name
     form.price.data = product.price
     form.size.data = product.size
     form.add_info.data = product.add_info
     category = product.category_id
-    return render_template('product/updateproduct.html', title = "Update Product Page", form = form, categories = categories, product = product)
+    return render_template('product/updateproduct.html', title = "Update Product Page", form = form, categories = categories, product = product, staff = staff)
 
-@app.route('/deleteproduct/<int:id>', methods=["POST"])
-def deleteproduct(id):
+@app.route('/deleteproduct/<int:id>/<int:staff_id>', methods=["POST"])
+def deleteproduct(id, staff_id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('customer_login'))
     product = Product.query.get_or_404(id)
+    staff = Staff.query.get_or_404(staff_id)
     if request.method == "POST":
         try:
             os.unlink(os.path.join(current_app.root_path, "static/images" + product.image))
@@ -90,9 +94,9 @@ def deleteproduct(id):
         db.session.delete(product)
         db.session.commit()
         flash(f'Your product {product.product_name} was deleted.', 'success')
-        return redirect(url_for('admin'))
+        return redirect(url_for('admin', id = staff.staff_id))
     flash(f'Cannot delete the product.','danger')
-    return render_template(url_for('admin'))
+    return render_template(url_for('admin', id = staff.staff_id))
 
 @app.route('/product_details/<int:id>', methods=['GET', 'POST'])
 def product_details(id):

@@ -20,7 +20,7 @@
                 <td>
                   <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#exampleModalLong-{{warehouse.warehouse_id}}">Details</button>
                 </td>
-                <td><a href="{{ url_for('updatewarehouse', warehouse_id=warehouse.warehouse_id)}}" class = "btn btn-sm btn-outline-info"> Edit </a></td>
+                <td><a href="{{ url_for('updatewarehouse', warehouse_id=warehouse.warehouse_id, staff_id=staff.staff_id)}}" class = "btn btn-sm btn-outline-info"> Edit </a></td>
                 <td>
                   <button type = "button" class = "btn btn-danger btn-sm" data-toggle = "modal" data-target="#exampleModal-{{warehouse.warehouse_id}}"> Delete </button>
                 </td>
@@ -55,10 +55,7 @@
                   </div> 
                   </div>
                   <div class="modal-footer">
-                    <form action="{{ url_for('updatewarehouse',warehouse_id=warehouse.warehouse_id)}}" method = "POST">
-                      <input type = "hidden" name="warehouse" value="{{ warehouse.warehouse_id }}"></input>
-                      <button type = "submit" class = "btn btn-outline-info">Update Warehouse</button>
-                    </form>
+                   
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                   </div> 
                 </div>
@@ -79,7 +76,7 @@
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <form action="{{url_for('deletewarehouse',warehouse_id=warehouse.warehouse_id)}}" method = "POST">
+                    <form action="{{url_for('deletewarehouse',warehouse_id=warehouse.warehouse_id,staff_id=staff.staff_id)}}" method = "POST">
                       <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                   </div>
