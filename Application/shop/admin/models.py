@@ -46,6 +46,7 @@ class Staff(db.Model):
     def __repr__(self):
         return '<Staff %r>' % self.email
 
+
 class Supplier(db.Model):
     __tablename__ = 'supplier'
     supplier_id = db.Column(db.Integer, db.Sequence('supplier_id_sq', start = 8000001, increment = 1, minvalue = 8000001, maxvalue = 8999999), primary_key = True)
@@ -104,7 +105,7 @@ class Orders(db.Model):
     ordering_total = db.Column(db.Numeric(9,2), nullable = True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable = False)
     status = db.Column(db.String(8), nullable = False, default = 'issued')
-    __table_args__ = (CheckConstraint('ordering_total >= 0'), CheckConstraint("status in (('pending','issued','send','received'))"),)
+    __table_args__ = (CheckConstraint('ordering_total >= 0'), CheckConstraint("status in ('pending','issued','send','received')"),)
 
     def __repr__(self):
         return '<Orders %r>' % self.order_id
