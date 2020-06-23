@@ -126,7 +126,6 @@ def addorder(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('login'))
-    #if current_user.is_authenticated:
     try:
         form = Checkout(request.form)
         grandtotal = 0
@@ -142,7 +141,7 @@ def addorder(id):
             customer = Customer.query.filter_by(customer_id = id).first()
             warehouse = Warehouse.query.filter_by(a_state = customer.da_state).first()
             reduceavailability = Availability.query.filter_by(product_id = int(key)).filter_by(warehouse_id = warehouse.warehouse_id).first()
-            if (reduceavailability.item_quantity > int(orderitem.quantity)):
+            if (reduceavailability.item_quantity >= int(orderitem.quantity)):
                 reduceavailability.item_quantity -= int(orderitem.quantity)
                 db.session.add(orderitem)
             else:

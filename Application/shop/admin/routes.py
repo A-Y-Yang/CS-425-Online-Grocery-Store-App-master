@@ -51,6 +51,7 @@ def staff_login():
 
 @app.route('/logout')
 def logout():
+    session.pop('Shoppingcart')
     logout_user()
     return redirect(url_for('home'))
 
@@ -338,6 +339,9 @@ def addstock(id):
                 updatestock = Stock.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id).first()
                 updatestock.item_quantity += int(addstock.add_quantity)
                 updatestock.size_total += Decimal(addstock.add_size)
+                upaddstock = AddStock.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id).first()
+                upaddstock.add_quantity = addstock.add_quantity
+                upaddstock.add_size = addstock.add_size
                 updatewh = Warehouse.query.get_or_404(addstock.warehouse_id)
                 updatewh.capacity_used += Decimal(addstock.add_size)
                 updateavail = Availability.query.filter_by(product_id = addstock.product_id).filter_by(warehouse_id = addstock.warehouse_id).first()
