@@ -4,6 +4,12 @@
 {% include 'admin_navbar.html' %}
 
 <div class="container">
+    <div class="col-md-12">
+      <form action="{{ url_for('customer_list', id = staff.staff_id) }}" class="form-inline my-4 my-lg-2" method="POST">
+        <input class="form-control mr-sm-3" id="keyword" name="keyword" type="text" placeholder="Customer Name">
+        <button class="btn btn-dark my-2 my-sm-0" type="submit">Search</button> 
+      </form>
+    </div>
     <table class="table table-sm table-condensed  table-striped">
         <thead>
             <th>Customer ID</th>

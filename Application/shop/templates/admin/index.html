@@ -4,51 +4,57 @@
 {% include 'admin_navbar.html' %}
 
 <div class="container">
-    <table class="table table-sm table-condensed  table-striped">
-        <thead>
-            <th>Sequence</th>
-            <th>Product Name</th>
-            <th>Unit Price ($)</th>
-            <th>Image</th>
-            <th>Edit</th>
-            <th>Delete</th>
-        </thead>
-        <tbody>
-            {% for product in products %}
-            <tr>
-                <td>{{loop.index}}</td>
-                <td>{{product.product_name}}</td>
-                <td>{{product.price}}</td>
-                <td><img src = "{{ url_for('static', filename = 'images/'+ product.image) }}" width = "50" height = "40"></td>
-                <td><a href="{{ url_for('updateproduct', id = staff.staff_id, product_id=product.product_id)}}" class = "btn btn-sm btn-outline-info"> Edit </a></td>
-                <td>
-                  <button type = "button" class = "btn btn-danger btn-sm" data-toggle = "modal" data-target="#exampleModal-{{product.product_id}}"> Delete </button>
-                </td>
-            </tr>
-            <!--Modal-->
-            <div class="modal fade" id="exampleModal-{{product.product_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">{{product.product_name}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    <p class="text"> Are you sure that you want to delete the product ({{product.product_name}})? </p>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <form action="{{url_for('deleteproduct', id = staff.staff_id, product_id=product.product_id)}}" method = "POST">
-                      <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                  </div>
+  <div class="col-md-12">
+    <form action="{{ url_for('admin', id = staff.staff_id) }}" class="form-inline my-4 my-lg-2" method="POST">
+      <input class="form-control mr-sm-3" id="keyword" name="keyword" type="text" placeholder="Product Name">
+      <button class="btn btn-dark my-2 my-sm-0" type="submit">Search</button> 
+    </form>
+  </div>
+  <table class="table table-sm table-condensed  table-striped">
+      <thead>
+          <th>Sequence</th>
+          <th>Product Name</th>
+          <th>Unit Price ($)</th>
+          <th>Image</th>
+          <th>Edit</th>
+          <th>Delete</th>
+      </thead>
+      <tbody>
+          {% for product in products %}
+          <tr>
+              <td>{{loop.index}}</td>
+              <td>{{product.product_name}}</td>
+              <td>{{product.price}}</td>
+              <td><img src = "{{ url_for('static', filename = 'images/'+ product.image) }}" width = "50" height = "40"></td>
+              <td><a href="{{ url_for('updateproduct', id = staff.staff_id, product_id=product.product_id)}}" class = "btn btn-sm btn-outline-info"> Edit </a></td>
+              <td>
+                <button type = "button" class = "btn btn-danger btn-sm" data-toggle = "modal" data-target="#exampleModal-{{product.product_id}}"> Delete </button>
+              </td>
+          </tr>
+          <!--Modal-->
+          <div class="modal fade" id="exampleModal-{{product.product_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">{{product.product_name}}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p class="text"> Are you sure that you want to delete the product ({{product.product_name}})? </p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <form action="{{url_for('deleteproduct', id = staff.staff_id, product_id=product.product_id)}}" method = "POST">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                  </form>
                 </div>
               </div>
             </div>
-            {% endfor %}
-        </tbody>
-    </table>
+          </div>
+          {% endfor %}
+      </tbody>
+  </table>
 </div>
 {% endblock content %}

@@ -18,6 +18,10 @@ flask-login = "*"
 email-validator = "*"
 flask-migrate = "*"
 flask-bcrypt = "*"
+flask-msearch = "*"
+whoosh = "*"
+blinker = "*"
+elasticsearch = "==6.3.1"
 
 [requires]
 python_version = "3.7"

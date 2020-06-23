@@ -11,6 +11,7 @@ def user_load(user_id):
 
 class Customer(db.Model):
     __tablename__ = 'customer'
+    __searchable__ = ['first_name','last_name']
     customer_id = db.Column(db.Integer, db.Sequence('customer_id_sq', start = 1000001, increment = 1, minvalue = 1000001, maxvalue = 1999999), primary_key = True)
     first_name = db.Column(db.String(20), unique = False, nullable = False)
     last_name =  db.Column(db.String(20), unique = False, nullable = False)
@@ -88,6 +89,7 @@ class Category(db.Model):
 
 class Product(db.Model):
     __tablename__ = 'product'
+    __searchable__ = ['product_name']
     product_id = db.Column(db.Integer, db.Sequence('product_id_sq', start = 3000001, increment = 1, minvalue = 3000001, maxvalue = 4999999), primary_key = True)
     product_name = db.Column(db.String(30), nullable = False, unique = True)
     price = db.Column(db.Numeric(9,2), nullable = False, unique = False)

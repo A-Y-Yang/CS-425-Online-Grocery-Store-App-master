@@ -1,9 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 from flask_login import LoginManager
-#from flask_bootstrap import Bootstrap
+from flask_msearch import Search
 import os
 from flask_migrate import Migrate
 
@@ -19,10 +18,8 @@ configure_uploads(app, photos)
 patch_request_class(app)
 
 db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
-#Bootstrap(app)
-#search = Seach()
-#search.init_app(app)
+search = Search()
+search.init_app(app)
 
 migrate = Migrate(app, db)
 with app.app_context():

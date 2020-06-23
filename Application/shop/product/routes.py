@@ -1,6 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash, session, current_app
 from shop import app, db, photos, login_manager
-from flask_login import login_required, logout_user, current_user
 from shop.admin.models import Category, Product, Orders, OrderItem, Owns, Customer, Warehouse, Availability, Staff
 from shop.customer.forms import Checkout
 from .forms import Addproduct
@@ -13,13 +12,17 @@ def addcategory():
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('login'))
-    if request.method == "POST":
-        getcategory = request.form.get('category')
-        category = Category(name=getcategory)
-        db.session.add(category)
-        db.session.commit()
-        flash(f'The Category {getcategory} was added to your database.', 'success')
-        return redirect(url_for('addcategory'))
+    try:
+        if request.method == "POST":
+            getcategory = request.form.get('category')
+            category = Category(name=getcategory)
+            db.session.add(category)
+            db.session.commit()
+            flash(f'The Category {getcategory} was added to your database.', 'success')
+            return redirect(url_for('addcategory'))
+    except Exception as e:
+        print(e)
+        flash(f'Fails to add category.', 'danger')
     return render_template('product/addcategory.html', title = "Add Category")
 
 @app.route('/updatecat/<int:id>', methods=['GET', 'POST'])
@@ -28,11 +31,15 @@ def updatecat(id):
         flash(f'Plese login first','danger')
     updatecat = Category.query.get_or_404(id)
     category = request.form.get('category')
-    if request.method =="POST":
-        updatecat.name = category
-        flash(f'Your category has been updated', 'success')
-        db.session.commit()
-        return redirect(url_for('categories'))
+    try:
+        if request.method =="POST":
+            updatecat.name = category
+            flash(f'Your category has been updated', 'success')
+            db.session.commit()
+            return redirect(url_for('categories'))
+    except Exception as e:
+        print(e)
+        flash(f'Fails to update category.', 'danger')
     return render_template('product/updatecat.html', title = "Update Category Page", updatecat = updatecat)
 
 @app.route('/addproduct/<int:id>', methods=['GET', 'POST'])

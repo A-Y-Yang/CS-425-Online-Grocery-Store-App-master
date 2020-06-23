@@ -1,5 +1,5 @@
 from flask import render_template, session, request, redirect, url_for, flash
-from flask_login import login_required, logout_user, current_user
+from flask_login import logout_user
 from decimal import Decimal
 from shop import app, db, login_manager
 from .forms import RegistrationForm, LoginForm, StaffRegistrationForm, Addsupplier, Addwarehouse
@@ -11,57 +11,87 @@ import os
 def home():
     return render_template('index.html')
 
-@app.route('/admin/<int:id>')
+@app.route('/admin/<int:id>', methods = ['GET','POST'])
 def admin(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     staff = Staff.query.get_or_404(id)
     products = Product.query.order_by(Product.product_name.asc()).all()
-    staff = Staff.query.get_or_404(id)
+    try:
+        if request.method == 'POST':
+            keyword = request.form.get('keyword')
+            if (Product.query.msearch(keyword, fields = ['product_name']).first() is None):
+                flash(f'No relevant product is found', 'danger')
+            else:
+                products = Product.query.msearch(keyword, fields = ['product_name']).order_by(Product.product_name.asc()).all()
+    except Exception as e:
+        print (e)
+        flash(f'No relevant product is found', 'danger')
     return render_template('admin/index.html', title = 'Admin Page', products = products, staff = staff)
 
 @app.route('/staff_register', methods=['GET', 'POST'])
 def staff_register():
     form = StaffRegistrationForm(request.form)
-    if request.method == 'POST' and form.validate():
-        staff = Staff(first_name = form.first_name.data, last_name = form.last_name.data,
-                    a_line_one= form.a_line_one.data, a_line_two = form.a_line_two.data,
-                    a_city = form.a_city.data, a_state = form.a_state.data,
-                    a_zipcode = form.a_zipcode.data, phone = form.phone.data, email = form.email.data, 
-                    salary = form.salary.data, job_title = form.job_title.data)
-        db.session.add(staff)
-        db.session.commit()
-        flash(f'Welcome {form.first_name.data}! Your staff account is created', 'success')
-        return redirect(url_for('staff_login'))
+    try:
+        if request.method == 'POST' and form.validate():
+            staff = Staff(first_name = form.first_name.data, last_name = form.last_name.data,
+                        a_line_one= form.a_line_one.data, a_line_two = form.a_line_two.data,
+                        a_city = form.a_city.data, a_state = form.a_state.data,
+                        a_zipcode = form.a_zipcode.data, phone = form.phone.data, email = form.email.data, 
+                        salary = form.salary.data, job_title = form.job_title.data)
+            if (Staff.query.filter_by(email = staff.email).first() is not None):
+                flash(f'This email already exists. Please register with another email', 'danger')
+            else:
+                db.session.add(staff)
+                db.session.commit()
+                flash(f'Welcome {form.first_name.data}! Your staff account is created', 'success')
+                return redirect(url_for('staff_login'))
+    except Exception as e:
+        print(e)
+        flash(f'Fails to register.', 'danger')
     return render_template('admin/register.html', title = 'Staff Registeration', form=form)
 
 @app.route('/staff_login', methods=['GET', 'POST'])
 def staff_login():
     form = LoginForm(request.form)
-    if request.method == 'POST' and form.validate():
-        staff = Staff.query.filter_by(first_name = form.first_name.data).first()
-        if staff and staff.email == form.email.data:
-            session['email'] = form.email.data
-            flash(f'Welcome {form.first_name.data}. You are logged-in.', 'success')
-            return redirect(request.args.get('next') or url_for('admin', id = staff.staff_id))
-        else:
-            flash(f'Wrong email. Please try again.', 'danger')
+    try: 
+        if request.method == 'POST' and form.validate():
+            staff = Staff.query.filter_by(first_name = form.first_name.data).first()
+            if staff and staff.email == form.email.data:
+                session['email'] = form.email.data
+                flash(f'Welcome {form.first_name.data}. You are logged-in.', 'success')
+                return redirect(request.args.get('next') or url_for('admin', id = staff.staff_id))
+            else:
+                flash(f'Wrong email. Please try again.', 'danger')
+    except Exception as e:
+        print(e)
+        flash(f'Problem occurs during login.', 'danger')
     return render_template('admin/login.html', title = 'Staff Login Page', form=form)
 
 @app.route('/logout')
 def logout():
-    session.pop('Shoppingcart')
+    session.clear()
     logout_user()
     return redirect(url_for('home'))
 
-@app.route('/customer_list/<int:id>')
+@app.route('/customer_list/<int:id>', methods = ['GET', 'POST'])
 def customer_list(id):
     if 'email' not in session:
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     staff = Staff.query.get_or_404(id)
     customers = Customer.query.all()
+    try:
+        if request.method == 'POST':
+            keyword = request.form.get('keyword')
+            if (Customer.query.msearch(keyword, fields = ['first_name', 'last_name']).first() is None):
+                flash(f'No relevant customer is found', 'danger')
+            else:
+                customers = Customer.query.msearch(keyword, fields = ['first_name', 'last_name']).all()
+    except Exception as e:
+        print (e)
+        flash(f'No relevant customer is found', 'danger')
     return render_template('admin/customer_list.html', title = 'Customer List Page', customers = customers, staff = staff)
 
 @app.route('/deletecustomer/<int:id>/<int:customer_id>', methods=['POST'])
