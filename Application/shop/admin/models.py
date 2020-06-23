@@ -18,7 +18,7 @@ class Customer(db.Model):
     email = db.Column(db.String(50), unique = True, nullable = False)
     payment_total = db.Column(db.Numeric(9,2), unique = False, default = 0)
     paid_total = db.Column(db.Numeric(9,2), unique = False, default = 0)
-    balance = db.Column(db.Numeric(9,2), Computed('paid_total-payment_total;))
+    balance = db.Column(db.Numeric(9,2), Computed('paid_total-payment_total'))
     da_line_one = db.Column(db.String(100), unique = False, nullable = False)
     da_line_two = db.Column(db.String(100), unique = False, nullable = True)
     da_city = db.Column(db.String(50), unique = False, nullable = False)
