@@ -93,21 +93,36 @@ def customer_login():
 @app.route('/profile/<int:id>', methods=['GET', 'POST'])
 def profile(id):
     if 'email' not in session:
-        flash(f'Please login first','danger')
-        return redirect(url_for('home'))
+        flash(f'Plese login first','danger')
     customer = Customer.query.get_or_404(id)
-    form = RegistrationForm(request.form)
-    if request.method == 'POST' and form.validate():
-        customer = Customer(first_name = form.first_name.data, last_name = form.last_name.data,
-                    phone = form.phone.data, email = form.email.data, 
-                    da_line_one= form.da_line_one.data, 
-                    da_line_two = form.da_line_two.data,
-                    da_city = form.da_city.data, da_state = form.da_state.data,
-                    da_zipcode = form.da_zipcode.data)
-        db.session.commit()
-        flash(f'Your profile has been updated.', 'success')
-        return redirect({{url_for('customer', id = customer.customer_id)}})
-    return render_template('customer/profile.html', title = "Profile Page", form = form, customer = customer)
+    try:
+        form = RegistrationForm(request.form)
+        if request.method =="POST":
+            customer.first_name = form.first_name.data
+            customer.last_name = form.last_name.data
+            customer.phone = form.phone.data
+            customer.email = form.email.data
+            customer.da_line_one = form.da_line_one.data
+            customer.da_line_two = form.da_line_two.data
+            customer.da_city = form.da_city.data
+            customer.da_state = form.da_state.data
+            customer.da_zipcode = form.da_zipcode.data 
+            flash(f'Your profile has been updated.', 'success')
+            db.session.commit()
+            return redirect(url_for('customer', id = id))
+        form.first_name.data = customer.first_name
+        form.last_name.data = customer.last_name
+        form.phone.data = customer.phone
+        form.email.data = customer.email
+        form.da_line_one.data = customer.da_line_one
+        form.da_line_two.data = customer.da_line_two
+        form.da_city.data = customer.da_city
+        form.da_state.data = customer.da_state
+        form.da_zipcode.data  = customer.da_zipcode
+    except Exception as e:
+        print(e)
+        flash(f'Fails to update profile', 'danger')
+    return render_template('customer/profile.html', title = "Update Profile Page", form = form, customer = customer)
 
 @app.route('/orders/<int:id>', methods = ['GET'])
 def order_history(id):
@@ -175,24 +190,33 @@ def updatecards(id, card_number):
         return redirect(url_for('home'))
     customer = Customer.query.get_or_404(id)
     creditcard = CreditCard.query.get_or_404(str(card_number))
-    form = AddcardForm(request.form)
-    if request.method == 'POST':
-        creditcard = CreditCard(card_expire_date=form.card_expire_date.data, card_cvv=form.card_cvv.data,
-                    CBA_line_one= form.CBA_line_one.data, CBA_line_two = form.CBA_line_two.data,
-                    CBA_city = form.CBA_city.data, CBA_state = form.CBA_state.data,
-                    CBA_zipcode = form.CBA_zipcode.data)
-        db.session.commit()
-        flash(f'Your credit card info has been updated.','success')
-        return redirect(url_for('customer', id = customer.customer_id))
-    form.card_number.data = creditcard.card_number
-    form.card_owner_name.data = creditcard.card_owner_name
-    form.card_expire_date.data = creditcard.card_expire_date
-    form.card_cvv.data = creditcard.card_cvv
-    form.CBA_line_one.data = creditcard.CBA_line_one
-    form.CBA_line_two.data = creditcard.CBA_line_two
-    form.CBA_city.data = creditcard.CBA_city
-    form.CBA_state.data = creditcard.CBA_state
-    form.CBA_zipcode.data = creditcard.CBA_zipcode
+    try:
+        form = AddcardForm(request.form)
+        if request.method == 'POST':
+            creditcard.card_number = form.card_number.data
+            creditcard.card_owner_name = form.card_owner_name.data
+            creditcard.card_expire_date = form.card_expire_date.data
+            creditcard.card_cvv = form.card_cvv.data
+            creditcard.CBA_line_one= form.CBA_line_one.data
+            creditcard.CBA_line_two = form.CBA_line_two.data
+            creditcard.CBA_city = form.CBA_city.data
+            creditcard.CBA_state = form.CBA_state.data
+            creditcard.CBA_zipcode = form.CBA_zipcode.data
+            flash(f'This card {form.card_number.data} has been updated', 'success')
+            db.session.commit()
+            return redirect(url_for('customer', id = customer.customer_id))
+        form.card_number.data = creditcard.card_number
+        form.card_owner_name.data = creditcard.card_owner_name
+        form.card_expire_date.data = creditcard.card_expire_date
+        form.card_cvv.data = creditcard.card_cvv
+        form.CBA_line_one.data = creditcard.CBA_line_one
+        form.CBA_line_two.data = creditcard.CBA_line_two
+        form.CBA_city.data = creditcard.CBA_city
+        form.CBA_state.data = creditcard.CBA_state
+        form.CBA_zipcode.data = creditcard.CBA_zipcode
+    except Exception as e:
+        print(e)
+        flash(f'Fails to update card', 'danger')
     return render_template('customer/updatecards.html', title = "Update Credit Cards", form = form, creditcard=creditcard, customer = customer)
 
 @app.route('/deletecards/<int:id>/<int:card_number>', methods=["POST"])
