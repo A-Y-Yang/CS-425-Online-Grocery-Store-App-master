@@ -18,7 +18,7 @@ class Customer(db.Model):
     email = db.Column(db.String(50), unique = True, nullable = False)
     payment_total = db.Column(db.Numeric(9,2), unique = False, default = 0)
     paid_total = db.Column(db.Numeric(9,2), unique = False, default = 0)
-    balance = db.Column(db.Numeric(9,2), Computed('paid_total - payment_total'))
+    balance = db.Column(db.Numeric(9,2), Computed('paid_total-payment_total;))
     da_line_one = db.Column(db.String(100), unique = False, nullable = False)
     da_line_two = db.Column(db.String(100), unique = False, nullable = True)
     da_city = db.Column(db.String(50), unique = False, nullable = False)
@@ -140,25 +140,11 @@ class SupplierItem(db.Model):
     def __repr__(self):
         return '<SupplierItem %r>' % self.supplier_id, self.product_id
 
-class SupplyRequest(db.Model):
-    __tablename__ = 'request'
-    staff_id = db.Column(db.Integer, db.ForeignKey('staff.staff_id'), primary_key = True)
-    supplier_id = db.Column(db.Integer, db.ForeignKey('supplier.supplier_id'), primary_key = True)
-    details = db.Column(db.String(100), primary_key = True)
-
 class ProductPrice(db.Model):
     __tablename__ = 'product_price'
     product_id = db.Column(db.Integer, db.Sequence('product_id_sq', start = 3000001, increment = 1, minvalue = 3000001, maxvalue = 4999999), primary_key = True)
     delivery_state = db.Column(db.String(25), primary_key = True)
     price = db.Column(db.Numeric(9,2), nullable = False, unique = False)
-
-class Pricing(db.Model):
-    __tablename__ = 'pricing'
-    staff_id = db.Column(db.Integer, db.ForeignKey('staff.staff_id'))
-    product_id = db.Column(db.Integer, primary_key = True)
-    delivery_state = db.Column(db.String(25), primary_key = True)
-    new_price = db.Column(db.Numeric(9,2))
-    __table_args__ = (ForeignKeyConstraint(['product_id','delivery_state'],['product_price.product_id','product_price.delivery_state']), CheckConstraint('new_price > 0'),)
 
 class Stock(db.Model):
     __tablename__ = 'stock'
@@ -177,12 +163,6 @@ class AddStock(db.Model):
     add_size = db.Column(db.Numeric(12,5), nullable = False)
     __table_args__ = (ForeignKeyConstraint(['product_id','warehouse_id'],['stock.product_id','stock.warehouse_id']), CheckConstraint('add_size > 0'), CheckConstraint('add_quantity > 0'),)
 
-class Ordering(db.Model):
-    __tablename__ = 'ordering'
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.customer_id'), primary_key = True)
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id', ondelete='CASCADE'), primary_key = True)
-    staff_id = db.Column(db.Integer, db.ForeignKey('staff.staff_id'), primary_key = True)
-
 class Availability(db.Model):
     __tablename__ = 'availability'
     product_id = db.Column(db.Integer, db.ForeignKey('product.product_id', ondelete='CASCADE'), primary_key = True)
@@ -195,11 +175,6 @@ class Owns(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.customer_id', ondelete='CASCADE'), primary_key = True)
     card_number = db.Column(db.CHAR(16), db.ForeignKey('credit_card.card_number', ondelete='CASCADE'), primary_key = True)
 
-class PaidWith(db.Model):
-    __tablename__ = 'paidwith'
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id', ondelete='CASCADE'), primary_key = True)
-    card_number = db.Column(db.CHAR(16), db.ForeignKey('credit_card.card_number'), primary_key = True)
-
 class OrderItem(db.Model):
     __tablename__ = 'order_item'
     order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id', ondelete='CASCADE'), primary_key = True)
@@ -208,24 +183,5 @@ class OrderItem(db.Model):
     unit_price = db.Column(db.Numeric(9,2), nullable = False)
     subtotal =  db.Column(db.Numeric(9,2), Computed('quantity * unit_price'))
     __table_args__ = (CheckConstraint('quantity > 0'), CheckConstraint('unit_price >= 0'), CheckConstraint('subtotal >= 0'),)
-
-class Includes(db.Model):
-    __tablename__ = 'includes'
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id', ondelete='CASCADE'), primary_key = True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'), primary_key = True)
-    quantity = db.Column(db.Integer, nullable = False)
-    __table_args__ = (CheckConstraint('quantity > 0'),)
-
-class Order_item_warehouse_id(db.Model):
-    __tablename__ = 'order_item_warehouse_id'
-    order_id = db.Column(db.Integer,db.ForeignKey('orders.order_id', ondelete='CASCADE'), primary_key = True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id'), primary_key = True)
-    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.warehouse_id'), primary_key = True)
-
-class Stores(db.Model):
-    __tablename__ = 'stores'
-    product_id = db.Column(db.Integer, db.ForeignKey('product.product_id', ondelete='CASCADE'), primary_key = True)
-    warehouse_id = db.Column(db.Integer, db.ForeignKey('warehouse.warehouse_id', ondelete='CASCADE'), primary_key = True)
-    size_total = db.Column(db.Numeric(12,5), nullable = False)
 
 db.create_all()
