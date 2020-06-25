@@ -1,6 +1,6 @@
 from flask import render_template, session, request, redirect, url_for, flash, current_app
 from shop import app, db
-from shop.admin.models import Product, Customer, Owns, CreditCard
+from shop.admin.models import Product, Customer, Owns, CreditCard, ProductPrice
 from shop.customer.forms import Checkout
 
 def MergeDicts(dict1, dict2):
@@ -10,12 +10,17 @@ def MergeDicts(dict1, dict2):
         return dict(list(dict1.items()) + list(dict2.items()))
     return False
 
-@app.route('/addcart', methods = ['GET', 'POST'])
-def addcart():
+@app.route('/addcart/<int:id>', methods = ['GET', 'POST'])
+def addcart(id):
     try:
+        customer = Customer.query.filter_by(customer_id = id).first()
         product_id = request.form.get('product_id')
         quantity = request.form.get('quantity')
-        product = Product.query.filter_by(product_id=product_id).first()
+        product = Product.query.join(ProductPrice, Product.product_id == ProductPrice.product_id)\
+                        .add_columns(Product.product_id, Product.product_name, ProductPrice.price,
+                         Product.image, ProductPrice.delivery_state)\
+                        .filter(ProductPrice.delivery_state == customer.da_state)\
+                        .filter_by(product_id=product_id).first()
         if product_id and quantity and request.method == "POST":
             DictItems = {product_id: {'name': product.product_name, 'price': float(product.price), 'quantity': quantity, 'image': product.image}}
             if 'Shoppingcart' in session:

@@ -3,7 +3,7 @@ from flask_login import logout_user
 from decimal import Decimal
 from shop import app, db, login_manager
 from .forms import RegistrationForm, LoginForm, StaffRegistrationForm, Addsupplier, Addwarehouse
-from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders, CreditCard, Stock, AddStock, SupplierItem, ProductPrice, Availability
+from .models import Customer, Staff, Supplier, Warehouse, Product, Category, Orders, CreditCard, Stock, AddStock, SupplierItem, ProductPrice, Availability, OrderItem
 from .state import state_list
 import os
 
@@ -122,6 +122,10 @@ def order_list(id):
     orders = Orders.query.all()
     try: 
         if request.method == 'POST':
+            updatestock = OrderItem.query.filter_by(order_id = request.form.get('order_id')).all()
+            for item in updatestock:
+                product = Stock.query.filter_by(product_id = item.product_id).first()
+                product.item_quantity -= int(item.quantity)
             updateorder = Orders.query.filter_by(order_id = request.form.get('order_id')).first()
             updateorder.status = 'received'
             customer = Customer.query.filter_by(customer_id = updateorder.customer_id).first()

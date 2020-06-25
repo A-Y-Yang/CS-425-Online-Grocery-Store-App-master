@@ -54,7 +54,6 @@ def alcoholpage(id):
         flash(f'Please login first','danger')
         return redirect(url_for('home'))
     categories = Category.query.filter(Category.id == 2).all()
-    products = Product.query.filter(Product.category_id == 2).all()
     customer = Customer.query.get_or_404(id)
     products_by_state = Product.query.join(ProductPrice, Product.product_id == ProductPrice.product_id)\
                         .add_columns(Product.product_id, Product.product_name, ProductPrice.price,

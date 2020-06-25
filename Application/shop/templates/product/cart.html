@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
-
+<script language="javascript" type="text/javascript">
+    function roundNumber(rnum, rnum2, rlength) {
+      var newnumber = Math.round(rnum1*Math.pow(10,rlength))/Math.pow(10,rlength);
+      document.roundform.numberfield.value = parseFloat(newnumber); // Output the result to the form field (change for your purposes)
+    }
+</script>
 {% block content %}
 {% include "customer_navbar.html" %} 
 

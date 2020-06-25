@@ -24,7 +24,7 @@
                   <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target=".bd-example-modal-lg-{{product.product_id}}">Details</button>
                 </td>
                 <td>
-                  <form action="{{ url_for('addcart')}}" method = "POST">
+                  <form action="{{ url_for('addcart', id = customer.customer_id)}}" method = "POST">
                     <input type = "hidden" name="product_id" value="{{product.product_id}}"></input>
                     <label for="">Quantity: </label>
                     <input type = "number" name ="quantity" value = "1" min = "1"></input>
@@ -62,7 +62,7 @@
                   </div> 
                   </div>
                   <div class="modal-footer">
-                    <form action="{{ url_for('addcart')}}" method = "POST">
+                    <form action="{{ url_for('addcart', id = customer.customer_id)}}" method = "POST">
                       <input type = "hidden" name="product_id" value="{{ product.product_id }}"></input>
                       <label for="">Quantity: </label>
                       <input type = "number" name ="quantity" value = "1" min = "1"></input>
