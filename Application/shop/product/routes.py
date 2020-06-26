@@ -6,6 +6,8 @@ from .forms import Addproduct
 from decimal import Decimal
 import os
 from shop.admin.models import Staff
+ 
+## Build a route for staff to add a new category ##
 
 @app.route('/addcategory', methods=['GET', 'POST'])
 def addcategory():
@@ -25,6 +27,8 @@ def addcategory():
         flash(f'Fails to add category.', 'danger')
     return render_template('product/addcategory.html', title = "Add Category")
 
+## Build a route for staff to modify a existing category ##
+
 @app.route('/updatecat/<int:id>', methods=['GET', 'POST'])
 def updatecat(id):
     if 'email' not in session:
@@ -41,6 +45,9 @@ def updatecat(id):
         print(e)
         flash(f'Fails to update category.', 'danger')
     return render_template('product/updatecat.html', title = "Update Category Page", updatecat = updatecat)
+
+## Build a route for staff to add a new product ##
+## Staffs are able to insert/show images for products ##
 
 @app.route('/addproduct/<int:id>', methods=['GET', 'POST'])
 def addproduct(id):
@@ -65,6 +72,8 @@ def addproduct(id):
         flash(f'Cannot add the product.','danger')
         return redirect(url_for('admin', id = id))
     return render_template('product/addproduct.html', title = "Add Product Page", staff = staff, form = form, categories = categories)
+
+## Build a route for staff to modify existing products ##
 
 @app.route('/updateproduct/<int:id>/<int:product_id>', methods=['GET', 'POST'])
 def updateproduct(id, product_id):
@@ -97,6 +106,8 @@ def updateproduct(id, product_id):
         return redirect(url_for('admin', id = id))
     return render_template('product/updateproduct.html', title = "Update Product Page", staff = staff, form = form, categories = categories, product = product)
 
+## Build a route for staff to delete existing products ##
+
 @app.route('/deleteproduct/<int:id>/<int:product_id>', methods=["POST"])
 def deleteproduct(id, product_id):
     if 'email' not in session:
@@ -119,6 +130,7 @@ def deleteproduct(id, product_id):
         flash(f'Cannot delete the product.','danger')
         return redirect(url_for('admin', id = id))
 
+## Look up information about products ##
 
 @app.route('/product_details/<int:id>', methods=['GET', 'POST'])
 def product_details(id):
@@ -127,6 +139,11 @@ def product_details(id):
         return redirect(url_for('login'))
     product = Product.query.get_or_404(id)
     return render_template('product/product_details.html', product = product)
+
+## Build a route for customer to order products and check availability in shopping cart and make payment ##
+##  Customer are able to select one of the existing credit cards while checing out ##
+## The account balance will automatically change since the checkout by (payment_total) ##
+## The availability/stock quantity will automatically decrease by setting orders ##
 
 @app.route('/addorder/<int:id>', methods=['GET', 'POST'])
 def addorder(id):

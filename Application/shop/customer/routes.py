@@ -5,6 +5,8 @@ from shop.admin.models import Customer, Product, Category, Orders, CreditCard, O
 from .forms import AddcardForm, Checkout
 import os
 
+##Search for product available in home state##
+
 @app.route('/customer/<int:id>', methods = ['GET', 'POST'])
 def customer(id):
     if 'email' not in session:
@@ -34,6 +36,8 @@ def customer(id):
         flash(f'No relevant product in our inventory.', 'danger')
     return render_template('customer/index.html', title = 'Customer Page', products = products_by_state, customer = customer)
 
+## Build a route to query products grouped by “category(Food)” ##
+
 @app.route('/foodpage/<int:id>')
 def foodpage(id):
     if 'email' not in session:
@@ -47,6 +51,8 @@ def foodpage(id):
                         .filter(ProductPrice.delivery_state == customer.da_state)\
                         .filter(Product.category_id == 1).all()
     return render_template('customer/index.html', title = 'Customer Page', products = products_by_state,customer = customer,categories=categories)
+
+## Build a route to query products grouped by “category(Alcoholic Beverage)” ##
 
 @app.route('/alcoholpage/<int:id>')
 def alcoholpage(id):
@@ -62,6 +68,8 @@ def alcoholpage(id):
                         .filter(Product.category_id == 2).all()
     return render_template('customer/index.html', title = 'Customer Page', products = products_by_state ,customer = customer,categories=categories)
 
+## Build a route to query products grouped by “category(Non-alcololic Beverage)” ##
+
 @app.route('/nonalcoholpage/<int:id>')
 def nonalcoholpage(id):
     if 'email' not in session:
@@ -76,6 +84,9 @@ def nonalcoholpage(id):
                         .filter(ProductPrice.delivery_state == customer.da_state)\
                         .filter(Product.category_id == 3).all()
     return render_template('customer/index.html', title = 'Customer Page', products = products_by_state, customer = customer,categories=categories)
+
+## Build a route for customers to set up an account ##
+## Build a route for customers to change preference and account details and add/modify addresses ##
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -99,6 +110,8 @@ def register():
         flash(f'Fails to register.', 'danger')
     return render_template('customer/register.html', title = 'Customer Registeration', form=form)
 
+## Build a route for customers to login ##
+
 @app.route('/customer_login', methods=['GET', 'POST'])
 def customer_login():
     form = LoginForm(request.form)
@@ -116,6 +129,8 @@ def customer_login():
         flash(f'Problem occurs during login.', 'danger')
     return render_template('customer/login.html', title = 'Customer Login Page', form=form)
     
+## Build a route to modify account details and to add/delete/modify address ##
+
 @app.route('/profile/<int:id>', methods=['GET', 'POST'])
 def profile(id):
     if 'email' not in session:
@@ -149,6 +164,8 @@ def profile(id):
         print(e)
         flash(f'Fails to update profile', 'danger')
     return render_template('customer/profile.html', title = "Update Profile Page", form = form, customer = customer)
+  
+## Build a route to for customers to review orders ##
 
 @app.route('/orders/<int:id>', methods = ['GET'])
 def order_history(id):
@@ -158,6 +175,8 @@ def order_history(id):
     customer = Customer.query.get_or_404(id)
     orders = Orders.query.filter_by(customer_id = id).all()
     return render_template('customer/orders.html', title = 'Order History Page', orders = orders, customer = customer)
+  
+## Build a route for customer to review order details ##
 
 @app.route('/orders/<int:id>/<int:order_id>', methods = ['GET'])
 def order_history_details(id, order_id):
@@ -176,6 +195,8 @@ def categories():
         return redirect(url_for('home'))
     categories = Category.query.all()
     return render_template('admin/category.html', title = 'Category Page', categories = categories)
+  
+## Build a route for customers to add a new creditcard ##
 
 @app.route('/addcards/<int:id>', methods=['GET', 'POST'])
 def addcards(id):
@@ -202,6 +223,8 @@ def addcards(id):
         print(e)
         flash(f'Fails to add a new credit card.', 'danger')
     return render_template('customer/addcards.html', title = "Add Card Page", form = form, customer = customer)
+  
+## Build a route for customers to query all existing creditcards ##
 
 @app.route('/creditcards/<int:id>', methods=['GET', 'POST'])
 def creditcards(id):
@@ -212,6 +235,8 @@ def creditcards(id):
     customer_cards = db.session.query(Owns.card_number).filter(Owns.customer_id == id).subquery()
     creditcards = db.session.query(CreditCard).filter(CreditCard.card_number.in_(customer_cards))
     return render_template('customer/creditcards.html', title = 'Credit Card Page', creditcards = creditcards, customer = customer)
+   
+## Build a route for customers to modify existing creditcards ##
 
 @app.route('/updatecards/<int:id>/<int:card_number>', methods=['GET', 'POST'])
 def updatecards(id, card_number):
@@ -248,6 +273,8 @@ def updatecards(id, card_number):
         print(e)
         flash(f'Fails to update card', 'danger')
     return render_template('customer/updatecards.html', title = "Update Credit Cards", form = form, creditcard=creditcard, customer = customer)
+ 
+## Build a route for customers to delete all existing creditcards ##
 
 @app.route('/deletecards/<int:id>/<int:card_number>', methods=["POST"])
 def deletecards(id, card_number):

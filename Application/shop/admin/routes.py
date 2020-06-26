@@ -11,6 +11,7 @@ import os
 def home():
     return render_template('index.html')
 
+
 @app.route('/admin/<int:id>', methods = ['GET','POST'])
 def admin(id):
     if 'email' not in session:
@@ -29,6 +30,8 @@ def admin(id):
         print (e)
         flash(f'No relevant product is found', 'danger')
     return render_template('admin/index.html', title = 'Admin Page', products = products, staff = staff)
+
+## Build a route for registering a staff account ##
 
 @app.route('/staff_register', methods=['GET', 'POST'])
 def staff_register():
@@ -51,6 +54,8 @@ def staff_register():
         print(e)
         flash(f'Fails to register.', 'danger')
     return render_template('admin/register.html', title = 'Staff Registeration', form=form)
+
+## Build a route for staff account login##
 
 @app.route('/staff_login', methods=['GET', 'POST'])
 def staff_login():
@@ -75,6 +80,9 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
+## Build a route to Delete Customer ##
+## Build a route to view Customers' info ##
+
 @app.route('/customer_list/<int:id>', methods = ['GET', 'POST'])
 def customer_list(id):
     if 'email' not in session:
@@ -94,6 +102,8 @@ def customer_list(id):
         flash(f'No relevant customer is found', 'danger')
     return render_template('admin/customer_list.html', title = 'Customer List Page', customers = customers, staff = staff)
 
+## Build a route to Delete Customer ##
+
 @app.route('/deletecustomer/<int:id>/<int:customer_id>', methods=['POST'])
 def deletecustomer(id, customer_id):
     if 'email' not in session:
@@ -112,6 +122,9 @@ def deletecustomer(id, customer_id):
         print(e)
         flash(f'Cannot delete the customer.','danger')
     return render_template('admin/customer_list.html', title = 'Customer List Page', staff = staff, customers = customers)
+
+## Build a route for staff to Query/Modify Customer info AND process orders ##
+## The account balance will automatically change since the theorder finished by (paid_total) ##
 
 @app.route('/order_list/<int:id>', methods = ['GET', 'POST'])
 def order_list(id):
@@ -137,6 +150,8 @@ def order_list(id):
         flash(f'Fails to change order status', 'danger')
     return render_template('admin/order_list.html', title = 'Order List Page', staff = staff, orders = orders)
 
+## Build a route to Delete Customer info ##
+
 @app.route('/deletecsutomer/<int:id>/<int:order_id>', methods=["POST"])
 def deleteorder(id, order_id):
     if 'email' not in session:
@@ -156,6 +171,8 @@ def deleteorder(id, order_id):
         flash(f'Cannot delete the order.','danger')
     return render_template('admin/order_list.html', title = 'Order List Page', staff = staff, orders = orders)
 
+## Build a route to Query supplier list ##
+
 @app.route('/suppliers/<int:id>')
 def suppliers(id):
     if 'email' not in session:
@@ -164,6 +181,8 @@ def suppliers(id):
     staff = Staff.query.get_or_404(id)
     suppliers = Supplier.query.all()
     return render_template('admin/supplier.html', title = 'Supplier Page', suppliers = suppliers, staff = staff)
+
+## Build a route to Add supplier info ##
 
 @app.route('/addsupplier/<int:id>', methods=['GET', 'POST'])
 def addsupplier(id):
@@ -186,6 +205,8 @@ def addsupplier(id):
         flash(f'Fails to add supplier', 'danger')
     return render_template('admin/addsupplier.html', title = "Add Supplier Page", form = form, staff = staff)
 
+## Build a route to Query supplier info ##
+
 @app.route('/supplier_details/<int:id>/<int:supplier_id>', methods=['GET', 'POST'])
 def supplier_details(id, supplier_id):
     if 'email' not in session:
@@ -194,6 +215,8 @@ def supplier_details(id, supplier_id):
     staff = Staff.query.get_or_404(id)
     supplier = Supplier.query.get_or_404(supplier_id)
     return render_template('supplier/supplier_details.html', staff = staff, supplier = supplier)
+
+## Build a route to Modify suppliers info ##
 
 @app.route('/updatesupplier/<int:id>/<int:supplier_id>', methods=['GET', 'POST'])
 def updatesupplier(id, supplier_id):
@@ -228,6 +251,8 @@ def updatesupplier(id, supplier_id):
         flash(f'Fails to update supplier', 'danger')
     return render_template('admin/updatesupplier.html', title = "Update Supplier Page", staff = staff, form = form, supplier=supplier)
 
+## Build a route to delete supplier info ##
+
 @app.route('/deletesupplier/<int:id>/<int:supplier_id>', methods=["POST"])
 def deletesupplier(id, supplier_id):
     if 'email' not in session:
@@ -247,6 +272,8 @@ def deletesupplier(id, supplier_id):
         flash(f'Cannot delete the supplier.','danger')
     return render_template('admin/supplier.html', title = 'Supplier Page', staff = staff, suppliers = suppliers)
 
+## Build a route to query warehouse list AND check the storage limits ##
+
 @app.route('/warehouses/<int:id>')
 def warehouses(id):
     if 'email' not in session:
@@ -255,6 +282,8 @@ def warehouses(id):
     staff = Staff.query.get_or_404(id)
     warehouses = Warehouse.query.all()
     return render_template('admin/warehouse.html', title = 'Warehouse Page', warehouses = warehouses, staff = staff)
+
+## Build a route to add warehouse list ##
 
 @app.route('/addwarehouse/<int:id>', methods=['GET', 'POST'])
 def addwarehouse(id):
@@ -278,6 +307,8 @@ def addwarehouse(id):
         flash(f'Fails to add warehouse', 'danger')
     return render_template('admin/addwarehouse.html', title = "Add Warehouse Page", form = form, staff = staff)
 
+## Build a route to query warehouse info ##
+
 @app.route('/warehouse_details/<int:id>/<int:warehouse_id>', methods=['GET', 'POST'])
 def warehouse_details(id, warehouse_id):
     if 'email' not in session:
@@ -287,6 +318,8 @@ def warehouse_details(id, warehouse_id):
     warehouse = Warehouse.query.get_or_404(id)
     return render_template('warehouse/warehouse_details.html', staff = staff, warehouse = warehouse)
 
+
+## Build a route to modify warehouse info ##
 
 @app.route('/updatewarehouse/<int:id>/<int:warehouse_id>', methods=['GET', 'POST'])
 def updatewarehouse(id, warehouse_id):
@@ -319,6 +352,8 @@ def updatewarehouse(id, warehouse_id):
         flash(f'Fails to update warehouse', 'danger')
     return render_template('admin/updatewarehouse.html', title = "Update Warehouse Page", staff = staff, form = form, warehouse = warehouse)
 
+## Build a route to delete warehouse ##
+
 @app.route('/deletewarehouse/<int:id>/<int:warehouse_id>', methods=["POST"])
 def deletewarehouse(id, warehouse_id):
     if 'email' not in session:
@@ -336,6 +371,8 @@ def deletewarehouse(id, warehouse_id):
         print(e)
         flash(f'Cannot delete the warehouse.','danger')
     return render_template('admin/warehouse.html', title = 'Warehouse Page', warehouses = warehouses, staff = staff)
+
+## Build a route to add/modify stock/ Update availability of product in stock/ check the storage limits ##
 
 @app.route('/addstock/<int:id>', methods = ['GET', 'POST'])
 def addstock(id):
@@ -389,6 +426,8 @@ def addstock(id):
         return redirect(url_for('addstock', id = id))
     return render_template('admin/addstock.html', title = "Add Stock Page", staff = staff, warehouses = warehouses, products = products)
 
+## Build a route to set a specific supplier price ##
+
 @app.route('/supplierprice/<int:id>', methods = ['GET', 'POST'])
 def supplierprice(id):
     if 'email' not in session:
@@ -415,6 +454,7 @@ def supplierprice(id):
         return redirect(url_for('supplierprice', id = id))
     return render_template('admin/supplier_newprice.html', title = "Supplier Price Page", staff = staff, suppliers = suppliers, products = products)
 
+## Build a route to set/modify product price by delivery state ##
 
 @app.route('/pricebystate/<int:id>', methods = ['GET', 'POST'])
 def stateprice(id):

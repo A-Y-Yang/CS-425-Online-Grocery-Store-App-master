@@ -10,6 +10,8 @@ def MergeDicts(dict1, dict2):
         return dict(list(dict1.items()) + list(dict2.items()))
     return False
 
+## Build a route to add items to cart ##
+
 @app.route('/addcart/<int:id>', methods = ['GET', 'POST'])
 def addcart(id):
     try:
@@ -40,6 +42,8 @@ def addcart(id):
     finally:
         return redirect(request.referrer)
 
+## Build a route to query items of the cart ##
+
 @app.route('/cart/<int:id>', methods = ['GET'])
 def getCart(id):
     customer = Customer.query.get_or_404(id)
@@ -55,6 +59,8 @@ def getCart(id):
         grandtotal += float(product['price'])*int(product['quantity'])
         grandtotal = float("{:.2f}".format(grandtotal))
     return render_template('product/cart.html', grandtotal = grandtotal, customer = customer, form = form, creditcards = creditcards)
+
+## Build a route to change item quantity to cart ##
 
 @app.route('/updatecart/<int:id>/<int:code>', methods = ['POST'])
 def updateCart(id, code):
@@ -73,6 +79,8 @@ def updateCart(id, code):
             print(e)
             return redirect(url_for('getCart', id = id))
 
+## Build a route to delete items from cart ##
+
 @app.route('/deleteitem/<int:cus>/<int:id>/')
 def deleteitem(cus, id):
     if 'Shoppingcart' not in session and len(session['Shoppingcart']) <=0:
@@ -86,6 +94,8 @@ def deleteitem(cus, id):
     except Exception as e:
         print(e)
         return redirect(url_for('getCart', id = cus))
+
+## Build a route to delete all items from cart ##
 
 @app.route('/clearcart/<int:id>')
 def clearCart(id):
