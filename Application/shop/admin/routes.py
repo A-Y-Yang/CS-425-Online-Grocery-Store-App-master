@@ -139,6 +139,9 @@ def order_list(id):
             for item in updatestock:
                 product = Stock.query.filter_by(product_id = item.product_id).first()
                 product.item_quantity -= int(item.quantity)
+                warehouse = Warehouse.query.filter_by(warehouse_id = product.warehouse_id).first()
+                product_info = Product.query.filter_by(product_id = item.product_id).first()
+                warehouse.capacity_used -= Decimal(item.quantity*product_info.size)
             updateorder = Orders.query.filter_by(order_id = request.form.get('order_id')).first()
             updateorder.status = 'received'
             customer = Customer.query.filter_by(customer_id = updateorder.customer_id).first()

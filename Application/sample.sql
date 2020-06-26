@@ -43,8 +43,8 @@ values (nextval('order_id_sq'),1000001,'1234123412341234',4.39,'2020-06-22 18:24
         (nextval('order_id_sq'),1000001,'9876987698769876',4.39,'2020-06-24 22:44:20','send');
 --break
 insert into warehouse(warehouse_id, name, a_line_one, a_line_two, a_city, a_state, a_zipcode, capacity, capacity_used) 
-values (nextval('warehouse_id_sq'),'CHI Warehouse','1000-1820 W Sun Ave','#2222','Chicago','IL','60382',20000,0),
-        (nextval('warehouse_id_sq'),'Hoover Warehouse','293-380 Happy Pl',null,'Hoover','AL','33411',35000.893,0);
+values (nextval('warehouse_id_sq'),'CHI Warehouse','1000-1820 W Sun Ave','#2222','Chicago','IL','60382',20000,1.14),
+        (nextval('warehouse_id_sq'),'Hoover Warehouse','293-380 Happy Pl',null,'Hoover','AL','33411',35000.893,6.64);
 --break
 insert into supplier_item 
 values (8000001,3000001,0.5),
