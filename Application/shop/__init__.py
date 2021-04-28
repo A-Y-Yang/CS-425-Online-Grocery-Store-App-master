@@ -8,7 +8,7 @@ from flask_migrate import Migrate
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://master:cs425!ProjectGroup3@cs425-ogs-group-3.cnjzlkxau3i8.us-east-1.rds.amazonaws.com/cs425'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://[username]:[password]@[host]/[database]'
 app.config['SECRET_KEY'] = 'abcd1234'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOADED_PHOTOS_DEST'] = os.path.join(basedir, 'static/images')
